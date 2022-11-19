@@ -7,8 +7,8 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "upscale-rust",
-    "version": "0.0.0"
+    "productName": "upscale-rs",
+    "version": "0.1.0"
   },
   "tauri": {
     "allowlist": {
@@ -29,7 +29,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.oloko64.upscale",
+      "identifier": "com.oloko64.upscale-rs",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -56,10 +56,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 720,
         "resizable": true,
-        "title": "upscale-rust",
-        "width": 800
+        "title": "upscale-rs",
+        "width": 900
       }
     ]
   }

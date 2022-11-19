@@ -1,10 +1,10 @@
 [package]
-name = "upscale-rust"
-version = "0.0.0"
+name = "upscale-rs"
+version = "0.1.0"
 description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
+authors = ["OLoKo64 <reinaldorozatoj.11cg1@aleeas.com>"]
+license = "MIT"
+repository = "A Tauri based GUI app that upscale images written in Rust."
 edition = "2021"
 rust-version = "1.57"
 

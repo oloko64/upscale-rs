@@ -95,10 +95,14 @@ async function upscaleSingleImage() {
     alert("No image selected");
     return;
   }
-  isProcessing.value = true;
   const imageSavePath = await save({
     defaultPath: imagePath.value,
   });
+  if (imageSavePath === null) {
+    // user cancelled the selection
+    return;
+  }
+  isProcessing.value = true;
   const output = await invoke("upscale_single_image", {
     path: imagePath.value,
     savePath: imageSavePath,

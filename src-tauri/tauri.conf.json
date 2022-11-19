@@ -56,10 +56,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 720,
+        "height": 700,
         "resizable": false,
         "title": "upscale-rs",
-        "width": 880
+        "width": 870
       }
     ]
   }

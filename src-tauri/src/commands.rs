@@ -45,18 +45,15 @@ pub async fn upscale_single_image(
                 .spawn()
                 .expect("Failed to spawn realesrgan-ncnn-vulkan command");
 
-        loop {
-            if let Some(event) = rx.recv().await {
-                match event {
-                    CommandEvent::Stderr(data) | CommandEvent::Stdout(data) => {
-                        println!("{}", data);
-                    }
-                    _ => {}
+        while let Some(event) = rx.recv().await {
+            match event {
+                CommandEvent::Stderr(data) | CommandEvent::Stdout(data) => {
+                    println!("{}", data);
                 }
-            } else {
-                return "Processing finished".to_string();
+                _ => {}
             }
-        }
+        };
+        String::from("Upscaling finished successfully")
     });
-    command.await.unwrap()
+    command.await.expect("Failed to upscale image")
 }

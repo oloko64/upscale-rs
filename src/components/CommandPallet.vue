@@ -1,16 +1,48 @@
 <template>
   <div class="outer-box">
     <div class="options-column">
-      <button type="button" @click="openImage">Select Image</button>
-      <button type="button" @click="upscaleSingleImage">
+      <button
+        :disabled="isProcessing"
+        :class="{ 'blocked-cursor': isProcessing }"
+        type="button"
+        @click="openImage"
+      >
+        Select Image
+      </button>
+      <button
+        :disabled="isProcessing"
+        :class="{ 'blocked-cursor': isProcessing }"
+        type="button"
+        @click="upscaleSingleImage"
+      >
         Upscale Selected Image
       </button>
       <UpscaleFactorOptions @upscale-factor-changed="updateUpscaleFactor" />
-      <button type="button" @click="clearSelectedImage">Clear</button>
+      <button
+        :disabled="isProcessing"
+        :class="{ 'blocked-cursor': isProcessing }"
+        type="button"
+        @click="clearSelectedImage"
+      >
+        Clear
+      </button>
     </div>
     <div class="image-area">
       <h4>{{ imagePath }}</h4>
-      <img class="image-src" :src="imageBlob" width="500" v-if="!!imageBlob" />
+      <img
+        class="loading-gif"
+        src="../assets/loading-gif.gif"
+        width="180"
+        height="180"
+        v-if="isProcessing"
+      />
+      <img
+        class="image-src"
+        :src="imageBlob"
+        width="500"
+        height="500"
+        v-if="!!imageBlob"
+      />
     </div>
   </div>
 </template>
@@ -21,6 +53,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { open, save } from "@tauri-apps/api/dialog";
 import UpscaleFactorOptions from "./UpscaleFactorOptions.vue";
 
+const isProcessing = ref(false);
 const imagePath = ref("");
 const imageBlob = ref("");
 const upscaleFactor = ref("4");
@@ -40,7 +73,7 @@ async function openImage() {
     filters: [
       {
         name: "",
-        extensions: ["png", "jpeg"],
+        extensions: ["png", "jpeg", "jpg"],
       },
     ],
   });
@@ -62,6 +95,7 @@ async function upscaleSingleImage() {
     alert("No image selected");
     return;
   }
+  isProcessing.value = true;
   const imageSavePath = await save({
     defaultPath: imagePath.value,
   });
@@ -70,11 +104,21 @@ async function upscaleSingleImage() {
     savePath: imageSavePath,
     upscaleFactor: upscaleFactor.value,
   });
+  isProcessing.value = false;
   alert(output);
 }
 </script>
 
 <style scoped lang="scss">
+.blocked-cursor {
+  cursor: not-allowed;
+}
+.loading-gif {
+  filter: blur(0.5px);
+  margin-left: -80px;
+  margin-top: 160px;
+  position: fixed;
+}
 .upscale-options {
   text-align: left;
   align-items: flex-start;

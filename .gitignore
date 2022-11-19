@@ -24,9 +24,9 @@ dist-ssr
 *.sln
 *.sw?
 
-/resources
-/models
-src-tauri/resources
-src-tauri/models
+/resources*
+/models*
+src-tauri/resources*
+src-tauri/models*
 yarn.lock
 Cargo.lock

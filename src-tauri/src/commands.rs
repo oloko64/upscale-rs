@@ -7,21 +7,22 @@ pub async fn upscale_single_image(
     upscale_factor: String,
 ) -> String {
     let command = tauri::async_runtime::spawn(async move {
-        let (mut rx, mut _child) = Command::new("./resources/linux/bin/realesrgan-ncnn-vulkan")
-            .args([
-                "-i",
-                &path,
-                "-o",
-                &save_path,
-                "-m",
-                "./models",
-                "-n",
-                "realesrgan-x4plus",
-                "-s",
-                &upscale_factor,
-            ])
-            .spawn()
-            .expect("Failed to spawn cargo");
+        let (mut rx, mut _child) =
+            Command::new("./lib/upscale-rs/resources/linux/bin/realesrgan-ncnn-vulkan")
+                .args([
+                    "-i",
+                    &path,
+                    "-o",
+                    &save_path,
+                    "-m",
+                    "./lib/upscale-rs/models",
+                    "-n",
+                    "realesrgan-x4plus",
+                    "-s",
+                    &upscale_factor,
+                ])
+                .spawn()
+                .expect("Failed to spawn realesrgan-ncnn-vulkan command");
 
         loop {
             if let Some(event) = rx.recv().await {

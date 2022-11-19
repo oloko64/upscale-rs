@@ -91,10 +91,12 @@ async function openImage() {
     // user cancelled the selection
   } else {
     imagePath.value = selected;
-    imageBlob.value = `data:image/png;base64,${await invoke(
-      "read_image_base64",
-      { path: selected }
-    )}`;
+    try {
+      const imageBytes = await invoke("read_image_base64", { path: selected });
+      imageBlob.value = `data:image/png;base64,${imageBytes}`;
+    } catch (err) {
+      alert(err);
+    }
   }
 }
 
@@ -111,14 +113,19 @@ async function upscaleSingleImage() {
     return;
   }
   isProcessing.value = true;
-  const output = await invoke("upscale_single_image", {
-    path: imagePath.value,
-    savePath: imageSavePath,
-    upscaleFactor: upscaleFactor.value,
-    upscaleType: upscaleType.value,
-  });
-  isProcessing.value = false;
-  alert(output);
+  try {
+    const output = await invoke("upscale_single_image", {
+      path: imagePath.value,
+      savePath: imageSavePath,
+      upscaleFactor: upscaleFactor.value,
+      upscaleType: upscaleType.value,
+    });
+    alert(output);
+  } catch (err) {
+    alert(err);
+  } finally {
+    isProcessing.value = false;
+  }
 }
 </script>
 

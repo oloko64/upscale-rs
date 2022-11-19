@@ -6,7 +6,7 @@ enum UpscaleTypes {
 }
 
 impl UpscaleTypes {
-    fn get_upscale_type(&self) -> &str {
+    fn upscale_type_as_str(&self) -> &str {
         match self {
             UpscaleTypes::General => "realesrgan-x4plus",
             UpscaleTypes::Digital => "realesrgan-x4plus-anime",
@@ -20,7 +20,15 @@ pub async fn upscale_single_image(
     save_path: String,
     upscale_factor: String,
     upscale_type: String,
-) -> String {
+) -> Result<String, String> {
+    println!(
+        "Upscaling image: {} with the following configuration:
+        -> Save path: {}
+        -> Upscale factor: {} ### NOT WORKING ATM ###
+        -> Upscale type: {}",
+        &path, &save_path, &upscale_factor, &upscale_type
+    );
+
     let command = tauri::async_runtime::spawn(async move {
         let upscale_type_model = match upscale_type.as_str() {
             "general" => UpscaleTypes::General,
@@ -29,7 +37,7 @@ pub async fn upscale_single_image(
         };
 
         let (mut rx, mut _child) =
-            Command::new("./lib/upscale-rs/resources/linux/bin/realesrgan-ncnn-vulkan")
+            match Command::new("./lib/upscale-rs/resources/linux/bin/realesrgan-ncnn-vulkan")
                 .args([
                     "-i",
                     &path,
@@ -38,12 +46,18 @@ pub async fn upscale_single_image(
                     "-m",
                     "./lib/upscale-rs/models",
                     "-n",
-                    upscale_type_model.get_upscale_type(),
-                    "-s",
-                    &upscale_factor,
+                    upscale_type_model.upscale_type_as_str(),
                 ])
                 .spawn()
-                .expect("Failed to spawn realesrgan-ncnn-vulkan command");
+            {
+                Ok((rx, child)) => (rx, child),
+                Err(e) => {
+                    return Err(format!(
+                        "Failed to spawn process \"realesrgan-ncnn-vulkan\": {}",
+                        e
+                    ));
+                }
+            };
 
         while let Some(event) = rx.recv().await {
             match event {
@@ -52,8 +66,11 @@ pub async fn upscale_single_image(
                 }
                 _ => {}
             }
-        };
-        String::from("Upscaling finished successfully")
+        }
+        Ok(String::from("Upscaling finished successfully"))
     });
-    command.await.expect("Failed to upscale image")
+    match command.await {
+        Ok(result) => result,
+        Err(e) => Err(format!("Failed while await for command: {}", e)),
+    }
 }

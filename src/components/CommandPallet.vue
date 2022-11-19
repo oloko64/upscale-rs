@@ -9,6 +9,9 @@
       >
         Select Image
       </button>
+      <UpscaleTypeOption @upscale-type-changed="setUpscaleType" />
+      <!-- Scale factor seems not to be working -->
+      <!-- <UpscaleFactorOptions @upscale-factor-changed="updateUpscaleFactor" /> -->
       <button
         :disabled="isProcessing"
         :class="{ 'blocked-cursor': isProcessing }"
@@ -17,7 +20,6 @@
       >
         Upscale Selected Image
       </button>
-      <UpscaleFactorOptions @upscale-factor-changed="updateUpscaleFactor" />
       <button
         :disabled="isProcessing"
         :class="{ 'blocked-cursor': isProcessing }"
@@ -48,24 +50,30 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, Ref } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
 import { open, save } from "@tauri-apps/api/dialog";
 import UpscaleFactorOptions from "./UpscaleFactorOptions.vue";
+import UpscaleTypeOption from "./UpscaleTypeOption.vue";
 
 const isProcessing = ref(false);
 const imagePath = ref("");
 const imageBlob = ref("");
-const upscaleFactor = ref("4");
+const upscaleFactor: Ref<"2" | "3" | "4"> = ref("4");
+const upscaleType: Ref<"general" | "digital"> = ref("general");
+
+function setUpscaleType(value: any) {
+  upscaleType.value = value;
+}
 
 function clearSelectedImage() {
   imagePath.value = "";
   imageBlob.value = "";
 }
 
-function updateUpscaleFactor(value: any) {
-  upscaleFactor.value = value.target.value;
-}
+// function updateUpscaleFactor(value: any) {
+//   upscaleFactor.value = value.target.value;
+// }
 
 async function openImage() {
   // Open a selection dialog for image files
@@ -107,6 +115,7 @@ async function upscaleSingleImage() {
     path: imagePath.value,
     savePath: imageSavePath,
     upscaleFactor: upscaleFactor.value,
+    upscaleType: upscaleType.value,
   });
   isProcessing.value = false;
   alert(output);
@@ -119,7 +128,7 @@ async function upscaleSingleImage() {
 }
 .loading-gif {
   filter: blur(0.5px);
-  margin-left: -80px;
+  margin-left: -90px;
   margin-top: 160px;
   position: fixed;
 }
@@ -133,6 +142,7 @@ async function upscaleSingleImage() {
   border: 3px solid rgba($color: #ffffff, $alpha: 0.4);
 }
 .image-area {
+  text-align: center;
   min-width: 500px;
   min-height: 500px;
 }

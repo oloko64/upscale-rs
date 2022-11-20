@@ -1,6 +1,7 @@
 <template>
   <div class="upscale-types">
     <v-select
+      :disabled="props.disabled"
       label="Upscale Type"
       v-model="selectType"
       variant="solo"
@@ -22,6 +23,10 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
+
+const props = defineProps<{
+  disabled: boolean;
+}>();
 
 const selectType = ref("general");
 

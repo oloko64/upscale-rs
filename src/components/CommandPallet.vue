@@ -17,7 +17,7 @@
       >
         {{ isMultipleFiles ? "Select Images" : "Select Image" }}
       </v-btn>
-      <UpscaleTypeOption class="mt-2 mb-5" @upscale-type-changed="setUpscaleType" />
+      <UpscaleTypeOption :disabled="isProcessing" class="mt-2 mb-5" @upscale-type-changed="setUpscaleType" />
       <v-divider class="mb-10"/>
       <!-- Scale factor seems not to be working -->
       <!-- <UpscaleFactorOptions @upscale-factor-changed="updateUpscaleFactor" /> -->

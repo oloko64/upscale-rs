@@ -101,15 +101,19 @@ interface ImagePathsDisplay {
   isReady: boolean;
 }
 
+type UpscaleType = "general" | "digital";
+type UpscaleFactor = "2" | "3" | "4";
+
 const isProcessing = ref(false);
 const imagePath = ref("");
 const imagePaths: Ref<ImagePathsDisplay[]> = ref([]);
 const imageBlob = ref("");
-const upscaleFactor: Ref<"2" | "3" | "4"> = ref("4");
-const upscaleType: Ref<"general" | "digital"> = ref("general");
+const upscaleFactor: Ref<UpscaleFactor> = ref("4");
+const upscaleType: Ref<UpscaleType> = ref("general");
 const isMultipleFiles = ref(false);
 const showMultipleFilesProcessingIcon = ref(false);
 
+// Computes if the user is ready to upscale the image. Used the simplify the DOM code.
 const isReadyToUpscale = computed(() => {
   return !(
     (imagePath.value || imagePaths.value.length > 0) &&
@@ -117,14 +121,23 @@ const isReadyToUpscale = computed(() => {
   );
 });
 
+// Watch for the switch between single and multiple files and run the function that clear some variables.
 watch(isMultipleFiles, () => {
   clearSelectedImage();
 });
 
-function setUpscaleType(value: any) {
+/**
+ * Sets the upscale type.
+ *
+ * @param value - The upscale type. Available values are `general` and `digital`.
+ */
+function setUpscaleType(value: UpscaleType) {
   upscaleType.value = value;
 }
 
+/**
+ * Clears the selected image and some other variables.
+ */
 function clearSelectedImage() {
   imagePath.value = "";
   imagePaths.value = [];
@@ -132,10 +145,18 @@ function clearSelectedImage() {
   showMultipleFilesProcessingIcon.value = false;
 }
 
-// function updateUpscaleFactor(value: any) {
-//   upscaleFactor.value = value.target.value;
+/**
+ * Sets the upscale factor. Currently it's not working.
+ */
+// function updateUpscaleFactor(value: UpscaleFactor) {
+//   upscaleFactor.value = value;
 // }
 
+/**
+ * Opens the image file dialog from Tauri.
+ *
+ * It is used in the single and multiple file selector.
+ */
 async function openImage() {
   // Open a selection dialog for image files
   const selected = await open({
@@ -168,6 +189,11 @@ async function openImage() {
   }
 }
 
+/**
+ * Runs the correct single or multiple file processing function.
+ *
+ * It is used to control the code flow.
+ */
 function startProcessing() {
   if (isMultipleFiles.value) {
     upscaleMultipleImages();
@@ -176,6 +202,16 @@ function startProcessing() {
   }
 }
 
+/**
+ * Renames the given path adding the new `_upscaled-4x` suffix.
+ *
+ * This is used to avoid overwriting the original image.
+ *
+ * If the given path does not ends with `.png`, `.jpg` or `jpeg` it will add `_upscaled-4x.png` to the path.
+ *
+ * @param path - The path to be renamed.
+ * @returns The renamed path.
+ */
 function add_upscale_to_path(path: string) {
   if (path.endsWith(".png")) {
     return path.replace(new RegExp(".png" + "$"), "_upscaled-4x.png");
@@ -189,6 +225,13 @@ function add_upscale_to_path(path: string) {
   return path + "_upscaled-4x.png";
 }
 
+/**
+ * Upscales multiple images function.
+ *
+ * It will ask the user to select a folder to save the upscaled images.
+ *
+ * It will update the `isReady` property of the `imagePaths` array to true when the image is ready.
+ */
 async function upscaleMultipleImages() {
   const outputFolder = await open({
     directory: true,
@@ -218,6 +261,13 @@ async function upscaleMultipleImages() {
   }
 }
 
+/**
+ * Upscales a single image.
+ *
+ * It will ask the user to select a file name and location to save the upscaled image.
+ *
+ * After the image is upscaled, it will send a `alert` to the user.
+ */
 async function upscaleSingleImage() {
   if (imagePath.value === "") {
     alert("No image selected");

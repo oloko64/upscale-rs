@@ -1,5 +1,6 @@
 use std::{fs::File, io::Read};
 
+/// Reads a file and returns its contents as a string of base64.
 #[tauri::command]
 pub fn read_image_base64(path: &str) -> Result<String, String> {
     let mut file = match File::open(path) {

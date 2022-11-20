@@ -6,6 +6,7 @@ enum UpscaleTypes {
 }
 
 impl UpscaleTypes {
+    /// Returns the model to be used in the upscale.
     fn upscale_type_as_str(&self) -> &str {
         match self {
             UpscaleTypes::General => "realesrgan-x4plus",
@@ -14,6 +15,9 @@ impl UpscaleTypes {
     }
 }
 
+/// Upscales a single image.
+///
+/// Currently the upscale_factor is not used, but it is kept for future use.
 #[tauri::command]
 pub async fn upscale_single_image(
     path: String,

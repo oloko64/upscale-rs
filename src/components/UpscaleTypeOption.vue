@@ -28,10 +28,12 @@ const props = defineProps<{
   disabled: boolean;
 }>();
 
+// The upscale type. Default is `general`.
 const selectType = ref("general");
 
 const emit = defineEmits(["upscale-type-changed"]);
 
+// Watch for the select between `general` and `digital` type and sends selected type to the parent component.
 watch(selectType, (value) => {
   emit("upscale-type-changed", value);
 });

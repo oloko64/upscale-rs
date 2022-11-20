@@ -8,7 +8,7 @@ Using the [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) model under the 
 
 # Current Interface (WIP)
 
-![upscale-rs-interface-alpha2](https://user-images.githubusercontent.com/49915167/202835818-5f9d614b-0626-4f68-92fa-3716687ed68f.png)
+![upscale-rs-interface-alpha3](https://user-images.githubusercontent.com/49915167/202922903-d4cae531-6fb8-4ef7-a518-a9d4a1fc2557.png)
 
 # Upscaling Sample
 

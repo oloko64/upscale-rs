@@ -5,6 +5,7 @@
         v-model="isMultipleFiles"
         inset
         hide-details
+        :disabled="isProcessing"
         label="Multiple Images"
       ></v-switch>
       <v-btn

@@ -190,10 +190,13 @@ function add_upscale_to_path(path: string) {
 }
 
 async function upscaleMultipleImages() {
-  isProcessing.value = true;
   const outputFolder = await open({
     directory: true,
   });
+  if (outputFolder === null) {
+    return;
+  }
+  isProcessing.value = true;
   showMultipleFilesProcessingIcon.value = true;
   try {
     for (let i = 0; i < imagePaths.value.length; i++) {

@@ -57,7 +57,7 @@
       {
         "theme": "Dark",
         "fullscreen": false,
-        "height": 630,
+        "height": 573,
         "resizable": false,
         "title": "upscale-rs",
         "width": 870

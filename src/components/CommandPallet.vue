@@ -1,48 +1,56 @@
 <template>
   <div class="outer-box">
     <div class="options-column">
-      <button
+      <v-btn
+        size="large"
+        rounded="lg"
+        :prepend-icon="mdiFileImage"
         :disabled="isProcessing"
-        :class="{ 'blocked-cursor': isProcessing }"
-        type="button"
+        elevation="0"
         @click="openImage"
       >
         Select Image
-      </button>
+      </v-btn>
       <UpscaleTypeOption @upscale-type-changed="setUpscaleType" />
       <!-- Scale factor seems not to be working -->
       <!-- <UpscaleFactorOptions @upscale-factor-changed="updateUpscaleFactor" /> -->
-      <button
-        :disabled="isProcessing"
-        :class="{ 'blocked-cursor': isProcessing }"
-        type="button"
+      <v-btn
+        size="large"
+        rounded="lg"
+        class="mb-2"
+        :disabled="isProcessing || !imagePath"
+        elevation="0"
         @click="upscaleSingleImage"
       >
         Upscale Selected Image
-      </button>
-      <button
+      </v-btn>
+      <v-btn
+        size="large"
+        rounded="lg"
         :disabled="isProcessing"
-        :class="{ 'blocked-cursor': isProcessing }"
-        type="button"
+        elevation="0"
         @click="clearSelectedImage"
       >
         Clear
-      </button>
+      </v-btn>
     </div>
-    <div class="image-area">
-      <h4>{{ imagePath }}</h4>
-      <img
+    <div class="image-area mt-5">
+      <h4 class="mb-2">{{ imagePath }}</h4>
+      <v-progress-circular
         class="loading-gif"
-        src="../assets/loading-gif.gif"
-        width="180"
-        height="180"
+        color="primary"
+        indeterminate
+        :size="128"
+        :width="12"
         v-if="isProcessing"
-      />
-      <img
+      ></v-progress-circular>
+      <v-img
         class="image-src"
         :src="imageBlob"
         width="500"
         height="500"
+        aspect-ratio="1"
+        cover
         v-if="!!imageBlob"
       />
     </div>
@@ -55,6 +63,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { open, save } from "@tauri-apps/api/dialog";
 import UpscaleFactorOptions from "./UpscaleFactorOptions.vue";
 import UpscaleTypeOption from "./UpscaleTypeOption.vue";
+import { mdiFileImage } from "@mdi/js";
 
 const isProcessing = ref(false);
 const imagePath = ref("");
@@ -130,23 +139,15 @@ async function upscaleSingleImage() {
 </script>
 
 <style scoped lang="scss">
-.blocked-cursor {
-  cursor: not-allowed;
-}
 .loading-gif {
-  filter: blur(0.5px);
-  margin-left: -90px;
-  margin-top: 160px;
+  z-index: 1;
+  margin-left: -70px;
+  margin-top: 190px;
   position: fixed;
-}
-.upscale-options {
-  text-align: left;
-  align-items: flex-start;
-  margin-bottom: 10px;
 }
 .image-src {
   border-radius: 24px;
-  border: 3px solid rgba($color: #ffffff, $alpha: 0.4);
+  border: 2px solid rgba($color: #969696, $alpha: 0.4);
 }
 .image-area {
   text-align: center;

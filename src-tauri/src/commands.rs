@@ -64,7 +64,7 @@ pub async fn upscale_single_image(
                 CommandEvent::Stderr(data) | CommandEvent::Stdout(data) => {
                     println!("{}", data);
                 }
-                _ => {}
+                _ => (),
             }
         }
         Ok(String::from("Upscaling finished successfully"))

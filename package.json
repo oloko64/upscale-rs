@@ -12,9 +12,11 @@
   "dependencies": {
     "@tauri-apps/api": "^1.1.0",
     "sass": "^1.56.1",
-    "vue": "^3.2.37"
+    "vue": "^3.2.37",
+    "vuetify": "^3.0.1"
   },
   "devDependencies": {
+    "@mdi/js": "^7.0.96",
     "@tauri-apps/cli": "^1.1.0",
     "@types/node": "^18.7.10",
     "@vitejs/plugin-vue": "^3.0.1",

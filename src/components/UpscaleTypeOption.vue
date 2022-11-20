@@ -35,7 +35,5 @@ watch(selectType, (value) => {
 <style scoped lang="scss">
 .upscale-types {
   display: inline-block;
-  margin-top: 5px;
-  margin-bottom: 25px;
 }
 </style>

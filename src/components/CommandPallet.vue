@@ -1,6 +1,12 @@
 <template>
   <div class="outer-box">
     <div class="options-column">
+      <v-switch
+        v-model="isMultipleFiles"
+        inset
+        hide-details
+        label="Multiple Images"
+      ></v-switch>
       <v-btn
         size="large"
         rounded="lg"
@@ -9,20 +15,24 @@
         elevation="0"
         @click="openImage"
       >
-        Select Image
+        {{ isMultipleFiles ? "Select Images" : "Select Image" }}
       </v-btn>
-      <UpscaleTypeOption @upscale-type-changed="setUpscaleType" />
+      <UpscaleTypeOption class="mt-2 mb-5" @upscale-type-changed="setUpscaleType" />
+      <v-divider class="mb-10"/>
       <!-- Scale factor seems not to be working -->
       <!-- <UpscaleFactorOptions @upscale-factor-changed="updateUpscaleFactor" /> -->
       <v-btn
         size="large"
         rounded="lg"
         class="mb-2"
-        :disabled="isProcessing || !imagePath"
+        :disabled="isReadyToUpscale"
         elevation="0"
-        @click="upscaleSingleImage"
+        width="310"
+        @click="startProcessing"
       >
-        Upscale Selected Image
+        {{
+          isMultipleFiles ? "Upscale Selected Images" : "Upscale Selected Image"
+        }}
       </v-btn>
       <v-btn
         size="large"
@@ -34,16 +44,33 @@
         Clear
       </v-btn>
     </div>
-    <div class="image-area mt-5">
+    <div class="image-area mt-5" :class="{ 'text-center': !isMultipleFiles }">
       <h4 class="mb-2">{{ imagePath }}</h4>
+      <h4 class="mb-2" :key="imagePath.path" v-for="imagePath in imagePaths">
+        {{ imagePath.path }}
+        <v-progress-circular
+          v-if="!imagePath.isReady"
+          v-show="showMultipleFilesProcessingIcon"
+          indeterminate
+          color="primary"
+          size="16"
+        />
+        <v-icon
+          v-else
+          size="16"
+          :icon="mdiImageCheck"
+          v-show="showMultipleFilesProcessingIcon"
+        />
+        <v-divider/>
+      </h4>
       <v-progress-circular
         class="loading-gif"
         color="primary"
         indeterminate
         :size="128"
         :width="12"
-        v-if="isProcessing"
-      ></v-progress-circular>
+        v-if="isProcessing && !isMultipleFiles"
+      />
       <v-img
         class="image-src"
         :src="imageBlob"
@@ -58,18 +85,36 @@
 </template>
 
 <script setup lang="ts">
-import { ref, Ref } from "vue";
+import { ref, Ref, watch, computed } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
 import { open, save } from "@tauri-apps/api/dialog";
-import UpscaleFactorOptions from "./UpscaleFactorOptions.vue";
 import UpscaleTypeOption from "./UpscaleTypeOption.vue";
-import { mdiFileImage } from "@mdi/js";
+import { mdiFileImage, mdiImageCheck } from "@mdi/js";
+
+interface ImagePathsDisplay {
+  path: string;
+  isReady: boolean;
+}
 
 const isProcessing = ref(false);
 const imagePath = ref("");
+const imagePaths: Ref<ImagePathsDisplay[]> = ref([]);
 const imageBlob = ref("");
 const upscaleFactor: Ref<"2" | "3" | "4"> = ref("4");
 const upscaleType: Ref<"general" | "digital"> = ref("general");
+const isMultipleFiles = ref(false);
+const showMultipleFilesProcessingIcon = ref(false);
+
+const isReadyToUpscale = computed(() => {
+  return !(
+    (imagePath.value || imagePaths.value.length > 0) &&
+    !isProcessing.value
+  );
+});
+
+watch(isMultipleFiles, () => {
+  clearSelectedImage();
+});
 
 function setUpscaleType(value: any) {
   upscaleType.value = value;
@@ -77,7 +122,9 @@ function setUpscaleType(value: any) {
 
 function clearSelectedImage() {
   imagePath.value = "";
+  imagePaths.value = [];
   imageBlob.value = "";
+  showMultipleFilesProcessingIcon.value = false;
 }
 
 // function updateUpscaleFactor(value: any) {
@@ -87,6 +134,7 @@ function clearSelectedImage() {
 async function openImage() {
   // Open a selection dialog for image files
   const selected = await open({
+    multiple: isMultipleFiles.value,
     filters: [
       {
         name: "",
@@ -95,7 +143,13 @@ async function openImage() {
     ],
   });
   if (Array.isArray(selected)) {
-    // user selected multiple files
+    showMultipleFilesProcessingIcon.value = false;
+    imagePaths.value = selected.map((path) => {
+      return {
+        path,
+        isReady: false,
+      };
+    });
   } else if (selected === null) {
     // user cancelled the selection
   } else {
@@ -106,6 +160,55 @@ async function openImage() {
     } catch (err) {
       alert(err);
     }
+  }
+}
+
+function startProcessing() {
+  if (isMultipleFiles.value) {
+    upscaleMultipleImages();
+  } else {
+    upscaleSingleImage();
+  }
+}
+
+async function upscaleMultipleImages() {
+  isProcessing.value = true;
+  const outputFolder = await open({
+    directory: true,
+  });
+  showMultipleFilesProcessingIcon.value = true;
+  try {
+    for (let i = 0; i < imagePaths.value.length; i++) {
+      let upscaledFilePath = "";
+      if (imagePaths.value[i].path.endsWith(".png")) {
+        upscaledFilePath = imagePaths.value[i].path.replace(
+          new RegExp(".png" + "$"),
+          "_upscaled-4x.png"
+        );
+      } else if (imagePaths.value[i].path.endsWith(".jpg")) {
+        upscaledFilePath = imagePaths.value[i].path.replace(
+          new RegExp(".jpg" + "$"),
+          "_upscaled-4x.jpg"
+        );
+      } else if (imagePaths.value[i].path.endsWith(".jpeg")) {
+        upscaledFilePath = imagePaths.value[i].path.replace(
+          new RegExp(".jpeg" + "$"),
+          "_upscaled-4x.jpeg"
+        );
+      }
+      const outputFile = `${outputFolder}/${upscaledFilePath.split("/").pop()}`;
+      await invoke("upscale_single_image", {
+        path: imagePaths.value[i].path,
+        savePath: outputFile,
+        upscaleFactor: upscaleFactor.value,
+        upscaleType: upscaleType.value,
+      });
+      imagePaths.value[i].isReady = true;
+    }
+  } catch (err) {
+    alert(err);
+  } finally {
+    isProcessing.value = false;
   }
 }
 
@@ -150,7 +253,6 @@ async function upscaleSingleImage() {
   border: 2px solid rgba($color: #969696, $alpha: 0.4);
 }
 .image-area {
-  text-align: center;
   min-width: 500px;
   min-height: 500px;
 }

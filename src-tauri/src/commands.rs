@@ -28,6 +28,7 @@ pub async fn upscale_single_image(
         -> Upscale type: {}",
         &path, &save_path, &upscale_factor, &upscale_type
     );
+    return Ok("".to_string());
 
     let command = tauri::async_runtime::spawn(async move {
         let upscale_type_model = match upscale_type.as_str() {

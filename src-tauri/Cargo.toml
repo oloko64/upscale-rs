@@ -1,6 +1,6 @@
 [package]
 name = "upscale-rs"
-version = "0.1.3"
+version = "0.1.4"
 description = "A Tauri App"
 authors = ["OLoKo64 <reinaldorozatoj.11cg1@aleeas.com>"]
 license = "MIT"

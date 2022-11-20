@@ -176,6 +176,19 @@ function startProcessing() {
   }
 }
 
+function add_upscale_to_path(path: string) {
+  if (path.endsWith(".png")) {
+    return path.replace(new RegExp(".png" + "$"), "_upscaled-4x.png");
+  }
+  if (path.endsWith(".jpg")) {
+    return path.replace(new RegExp(".jpg" + "$"), "_upscaled-4x.jpg");
+  }
+  if (path.endsWith(".jpeg")) {
+    return path.replace(new RegExp(".jpeg" + "$"), "_upscaled-4x.jpeg");
+  }
+  return path + "_upscaled-4x.png";
+}
+
 async function upscaleMultipleImages() {
   isProcessing.value = true;
   const outputFolder = await open({
@@ -184,24 +197,9 @@ async function upscaleMultipleImages() {
   showMultipleFilesProcessingIcon.value = true;
   try {
     for (let i = 0; i < imagePaths.value.length; i++) {
-      let upscaledFilePath = "";
-      if (imagePaths.value[i].path.endsWith(".png")) {
-        upscaledFilePath = imagePaths.value[i].path.replace(
-          new RegExp(".png" + "$"),
-          "_upscaled-4x.png"
-        );
-      } else if (imagePaths.value[i].path.endsWith(".jpg")) {
-        upscaledFilePath = imagePaths.value[i].path.replace(
-          new RegExp(".jpg" + "$"),
-          "_upscaled-4x.jpg"
-        );
-      } else if (imagePaths.value[i].path.endsWith(".jpeg")) {
-        upscaledFilePath = imagePaths.value[i].path.replace(
-          new RegExp(".jpeg" + "$"),
-          "_upscaled-4x.jpeg"
-        );
-      }
-      const outputFile = `${outputFolder}/${upscaledFilePath.split("/").pop()}`;
+      let outputFile = add_upscale_to_path(imagePaths.value[i].path);
+
+      outputFile = `${outputFolder}/${outputFile.split("/").pop()}`;
       await invoke("upscale_single_image", {
         path: imagePaths.value[i].path,
         savePath: outputFile,
@@ -223,7 +221,7 @@ async function upscaleSingleImage() {
     return;
   }
   const imageSavePath = await save({
-    defaultPath: imagePath.value,
+    defaultPath: add_upscale_to_path(imagePath.value),
   });
   if (imageSavePath === null) {
     // user cancelled the selection

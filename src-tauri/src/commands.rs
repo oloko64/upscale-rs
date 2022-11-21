@@ -75,7 +75,7 @@ pub async fn upscale_single_image(
                         // This flush is needed to make sure the output is printed before the error is returned.
                         io::stdout().flush().expect("Failed to flush stdout");
                         return Err("Process exited with non-zero exit code.\nFor more information run the app from a terminal and check the output."
-                                .to_string(),
+                                .to_owned(),
                         );
                     }
                 }

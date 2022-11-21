@@ -1,3 +1,5 @@
+use std::io::{self, Write};
+
 use tauri::api::process::{Command, CommandEvent};
 
 enum UpscaleTypes {
@@ -67,6 +69,15 @@ pub async fn upscale_single_image(
             match event {
                 CommandEvent::Stderr(data) | CommandEvent::Stdout(data) => {
                     println!("{}", data);
+                }
+                CommandEvent::Terminated(process) => {
+                    if process.code.expect("Failed to get process exit code") != 0 {
+                        // This flush is needed to make sure the output is printed before the error is returned.
+                        io::stdout().flush().expect("Failed to flush stdout");
+                        return Err("Process exited with non-zero exit code.\nFor more information run the app from a terminal and check the output."
+                                .to_string(),
+                        );
+                    }
                 }
                 _ => (),
             }

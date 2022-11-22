@@ -342,7 +342,7 @@ async function upscaleSingleImage() {
 }
 
 .about-logo-redirect {
-  margin-top: 162px;
+  margin-top: 161px;
   margin-bottom: 0px !important;
   cursor: pointer;
 }

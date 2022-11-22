@@ -1,21 +1,17 @@
-# upscale-rs
+# Upscale-rs
+
+![upscale-rs-horizontal](https://user-images.githubusercontent.com/49915167/203207059-1ed3fd08-6cff-4068-a9d7-5b2559d1fb94.png)
 
 A GUI image upscaler written in Rust and Vue3 using Tauri.
 
 Using the [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) model under the hood.
 
-## Currently in alpha phase and active development.
+## Currently in beta and active development.
 
-# Current Interface (WIP)
+# Interface (WIP)
 
-![upscale-rs-interface-alpha3](https://user-images.githubusercontent.com/49915167/202922903-d4cae531-6fb8-4ef7-a518-a9d4a1fc2557.png)
+![upscale-rs-interface-beta1](https://user-images.githubusercontent.com/49915167/203207834-3c154fe5-94d0-490e-8b0a-cf8f9d931e9a.png)
 
 # Upscaling Sample
 
-### Before
-
-![before-ia](https://user-images.githubusercontent.com/49915167/202823568-3f4f01d7-12c6-4add-805a-87286bdcaca8.png)
-
-### After
-
-![after-ia](https://user-images.githubusercontent.com/49915167/202823591-bf46fbd5-f609-4943-a2aa-ef7d21470f50.png)
+![before-after-ia](https://user-images.githubusercontent.com/49915167/203209186-4fc7470a-acd4-4ad5-bab5-ef1df76496b1.jpg)

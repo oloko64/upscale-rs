@@ -8,7 +8,15 @@ import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
 import { aliases, mdi } from "vuetify/iconsets/mdi-svg";
-import "@mdi/font/css/materialdesignicons.css";
+import { createRouter, createWebHistory } from "vue-router";
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    { path: "/", component: () => import("./pages/Index.vue") },
+    { path: "/about", component: () => import("./pages/About.vue") },
+  ],
+});
 
 const vuetify = createVuetify({
   theme: {
@@ -25,4 +33,4 @@ const vuetify = createVuetify({
   directives,
 });
 
-createApp(App).use(vuetify).mount("#app");
+createApp(App).use(vuetify).use(router).mount("#app");

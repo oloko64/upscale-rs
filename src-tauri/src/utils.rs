@@ -18,3 +18,8 @@ pub fn read_image_base64(path: &str) -> Result<String, String> {
     };
     Ok(base64::encode(buffer))
 }
+
+#[tauri::command]
+pub fn get_version() -> String {
+    env!("CARGO_PKG_VERSION").to_owned()
+}

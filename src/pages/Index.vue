@@ -48,6 +48,7 @@
       >
         Clear
       </v-btn>
+      <img class="mb-3 about-logo-redirect" src="../assets/upscale-rs-horizontal.png" width="200" @click="openAboutPage" />
     </div>
     <div class="image-area mt-5" :class="{ 'text-center': !isMultipleFiles }">
       <h4 class="mb-2">{{ imagePath }}</h4>
@@ -93,8 +94,9 @@
 import { ref, Ref, watch, computed } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
 import { open, save } from "@tauri-apps/api/dialog";
-import UpscaleTypeOption from "./UpscaleTypeOption.vue";
-import { mdiFileImage, mdiImageCheck } from "@mdi/js";
+import UpscaleTypeOption from "../components/UpscaleTypeOption.vue";
+import { mdiFileImage, mdiImageCheck, mdiTimelineQuestion } from "@mdi/js";
+import { WebviewWindow } from "@tauri-apps/api/window";
 
 interface ImagePathsDisplay {
   path: string;
@@ -125,6 +127,25 @@ const isReadyToUpscale = computed(() => {
 watch(isMultipleFiles, () => {
   clearSelectedImage();
 });
+
+function openAboutPage() {
+  // https://tauri.app/v1/guides/features/multiwindow#create-a-window-in-javascript
+  const webview = new WebviewWindow("about-page", {
+    height: 400,
+    width: 500,
+    title: "About",
+    url: "/about",
+  });
+  // since the webview window is created asynchronously,
+  // Tauri emits the `tauri://created` and `tauri://error` to notify you of the creation response
+  webview.once("tauri://created", function () {
+    // webview window successfully created
+  });
+  webview.once("tauri://error", function (err) {
+    alert(err);
+    // an error happened creating the webview window
+  });
+}
 
 /**
  * Sets the upscale type.
@@ -318,6 +339,12 @@ async function upscaleSingleImage() {
   justify-content: space-between;
   width: 800px;
   height: 100%;
+}
+
+.about-logo-redirect {
+  margin-top: 161px;
+  margin-bottom: 0px !important;
+  cursor: pointer;
 }
 .options-column {
   display: flex;

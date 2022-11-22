@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "upscale-rs",
-    "version": "0.1.5"
+    "version": "0.1.6"
   },
   "tauri": {
     "allowlist": {
@@ -59,7 +59,7 @@
         "fullscreen": false,
         "height": 573,
         "resizable": false,
-        "title": "upscale-rs",
+        "title": "Upscale-rs",
         "width": 870
       }
     ]

@@ -48,13 +48,7 @@
       >
         Clear
       </v-btn>
-      <v-btn
-        size="small"
-        :icon="mdiTimelineQuestion"
-        style="margin-top: 150px"
-        elevation="0"
-        @click="openAboutPage"
-      ></v-btn>
+      <img class="mb-3 about-logo-redirect" src="../assets/upscale-rs-horizontal.png" width="200" @click="openAboutPage" />
     </div>
     <div class="image-area mt-5" :class="{ 'text-center': !isMultipleFiles }">
       <h4 class="mb-2">{{ imagePath }}</h4>
@@ -345,6 +339,12 @@ async function upscaleSingleImage() {
   justify-content: space-between;
   width: 800px;
   height: 100%;
+}
+
+.about-logo-redirect {
+  margin-top: 162px;
+  margin-bottom: 0px !important;
+  cursor: pointer;
 }
 .options-column {
   display: flex;

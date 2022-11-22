@@ -23,11 +23,11 @@
       },
       "externalBin": [],
       "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
+        "icons/upscale-rs-icon-32x32.png",
+        "icons/upscale-rs-icon-128x128.png",
+        "icons/upscale-rs-icon-128x128@x2.png",
+        "icons/upscale-rs-icon.icns",
+        "icons/upscale-rs-icon.ico"
       ],
       "identifier": "com.oloko64.upscale-rs",
       "longDescription": "",

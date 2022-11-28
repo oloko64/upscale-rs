@@ -2,7 +2,7 @@
 
 ![upscale-rs-horizontal](https://user-images.githubusercontent.com/49915167/203207059-1ed3fd08-6cff-4068-a9d7-5b2559d1fb94.png)
 
-A GUI image upscaler written in Rust and Vue3 using Tauri.
+A GUI image upscaler making use of [Tauri](https://tauri.app/) and [Vue3](https://vuejs.org/) with [Vuetify](https://next.vuetifyjs.com/en/) as it's component library.
 
 Using the [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) model under the hood.
 

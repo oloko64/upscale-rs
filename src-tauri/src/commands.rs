@@ -20,6 +20,9 @@ impl UpscaleTypes {
 /// Upscales a single image.
 ///
 /// Currently the upscale_factor is not used, but it is kept for future use.
+/// 
+/// The comment part of this function is for the Windows version of the program.
+/// When building it for Windows, you need to comment the Linux line and uncomment the Windows line.
 #[tauri::command]
 pub async fn upscale_single_image(
     path: String,
@@ -43,6 +46,7 @@ pub async fn upscale_single_image(
         };
 
         let (mut rx, mut _child) =
+            // match Command::new(r#".\resources\realesrgan-ncnn-vulkan.exe"#)
             match Command::new("./lib/upscale-rs/resources/linux/bin/realesrgan-ncnn-vulkan")
                 .args([
                     "-i",
@@ -50,6 +54,7 @@ pub async fn upscale_single_image(
                     "-o",
                     &save_path,
                     "-m",
+                    // ".\models",
                     "./lib/upscale-rs/models",
                     "-n",
                     upscale_type_model.upscale_type_as_str(),

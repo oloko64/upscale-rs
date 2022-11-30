@@ -1,4 +1,4 @@
-name: Upscale-rs Rust Tests
+name: Upscale-rs Workflow
 
 on:
   push:
@@ -21,4 +21,4 @@ jobs:
     - name: Build app
       run: yarn tauri build
     - name: Run tests
-      run: cd src-tauri && cargo test --verbose
+      run: cd src-tauri && cargo test

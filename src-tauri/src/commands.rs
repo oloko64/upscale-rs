@@ -65,11 +65,11 @@ pub async fn upscale_single_image(
                 .spawn()
             {
                 Ok((rx, child)) => (rx, child),
-                Err(e) => {
-                    logger.log(&format!("Failed to spawn command: {}", e));
+                Err(err) => {
+                    logger.log(&format!("Failed to spawn command: {}", err));
                     return Err(format!(
                         "Failed to spawn process \"realesrgan-ncnn-vulkan\": {}",
-                        e
+                        err
                     ));
                 }
             };
@@ -100,9 +100,9 @@ pub async fn upscale_single_image(
     let logger = utils::Logger::new();
     match command.await {
         Ok(result) => result,
-        Err(e) => {
-            logger.log(&format!("Failed to upscale image: {}", e));
-            return Err(format!("Failed while await for command: {}", e));
+        Err(err) => {
+            logger.log(&format!("Failed to upscale image: {}", err));
+            return Err(format!("Failed while await for command: {}", err));
         }
     }
 }

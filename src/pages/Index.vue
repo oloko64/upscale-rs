@@ -48,7 +48,10 @@
       >
         Clear
       </v-btn>
-      <img class="mb-3 about-logo-redirect" src="../assets/upscale-rs-horizontal.png" width="200" @click="openAboutPage" />
+      <div class="d-flex">
+        <img class="mb-3 about-logo-redirect" src="../assets/upscale-rs-horizontal.png" width="200" @click="openAboutPage" />
+        <v-btn elevation="0" class="config-button ml-4" size="32" :icon="mdiMenu" @click="openConfig"></v-btn>
+      </div>
     </div>
     <div class="image-area mt-5" :class="{ 'text-center': !isMultipleFiles }">
       <h4 class="mb-2">{{ imagePath }}</h4>
@@ -95,7 +98,7 @@ import { ref, Ref, watch, computed } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
 import { open, save } from "@tauri-apps/api/dialog";
 import UpscaleTypeOption from "../components/UpscaleTypeOption.vue";
-import { mdiFileImage, mdiImageCheck, mdiTimelineQuestion } from "@mdi/js";
+import { mdiFileImage, mdiImageCheck, mdiMenu } from "@mdi/js";
 import { WebviewWindow } from "@tauri-apps/api/window";
 
 interface ImagePathsDisplay {
@@ -154,6 +157,25 @@ function openAboutPage() {
  */
 function setUpscaleType(value: UpscaleType) {
   upscaleType.value = value;
+}
+
+function openConfig() {
+  // https://tauri.app/v1/guides/features/multiwindow#create-a-window-in-javascript
+  const webview = new WebviewWindow("config-page", {
+    height: 400,
+    width: 500,
+    title: "Config",
+    url: "/config",
+  });
+  // since the webview window is created asynchronously,
+  // Tauri emits the `tauri://created` and `tauri://error` to notify you of the creation response
+  webview.once("tauri://created", function () {
+    // webview window successfully created
+  });
+  webview.once("tauri://error", function (err) {
+    alert(err);
+    // an error happened creating the webview window
+  });
 }
 
 /**
@@ -319,9 +341,14 @@ async function upscaleSingleImage() {
 }
 
 .about-logo-redirect {
-  margin-top: 161px;
+  margin-top: 160px;
   margin-bottom: 0px !important;
+  height: 30px;
   cursor: pointer;
+}
+
+.config-button {
+  margin-top: 158px;
 }
 .options-column {
   display: flex;

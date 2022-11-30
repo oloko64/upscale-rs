@@ -4,6 +4,8 @@ use std::{
     path::PathBuf,
 };
 
+use crate::configuration::{self, ConfigData};
+
 pub struct Logger {
     path: PathBuf,
 }
@@ -27,6 +29,13 @@ impl Logger {
 
     /// Write a message to the log file. If the file does not exist, it will be created. If it does exist, it will be overwritten.
     pub fn log(&self, message: &str) {
+        let config = match load_configuration() {
+            Ok(config) => config,
+            Err(_) => ConfigData::default(),
+        };
+        if !config.get_application_logs() {
+            return;
+        }
         let mut file = File::create(&self.path).expect("Failed to create log file");
         file.write_all(message.as_bytes())
             .expect("Failed to write to log file");
@@ -63,6 +72,25 @@ pub fn replace_file_suffix(path: &str) -> String {
     } else {
         path.to_owned() + "_upscaled-4x.png"
     }
+}
+
+#[tauri::command]
+pub fn load_configuration() -> Result<ConfigData, String> {
+    let mut config = configuration::Config::new(None);
+    match config.load() {
+        Ok(config) => Ok(config.ok_or("Failed to load configuration")?),
+        Err(_) => {
+            return config
+                .create_default_config_file()
+                .map_err(|err| err.to_string())
+        }
+    }
+}
+
+#[tauri::command]
+pub fn write_configuration(config: ConfigData) -> Result<(), String> {
+    let config = configuration::Config::new(Some(config));
+    config.save().map_err(|err| err.to_string())
 }
 
 #[tauri::command]
@@ -116,7 +144,10 @@ mod tests {
 
     #[test]
     fn test_replace_file_suffix_suffix_not_implemented() {
-        assert_eq!(replace_file_suffix("/home/user/image.bmp"), "/home/user/image.bmp_upscaled-4x.png");
+        assert_eq!(
+            replace_file_suffix("/home/user/image.bmp"),
+            "/home/user/image.bmp_upscaled-4x.png"
+        );
     }
 
     #[test]

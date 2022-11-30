@@ -224,29 +224,6 @@ function startProcessing() {
 }
 
 /**
- * Renames the given path adding the new `_upscaled-4x` suffix.
- *
- * This is used to avoid overwriting the original image.
- *
- * If the given path does not ends with `.png`, `.jpg` or `jpeg` it will add `_upscaled-4x.png` to the path.
- *
- * @param path - The path to be renamed.
- * @returns The renamed path.
- */
-function add_upscale_to_path(path: string) {
-  if (path.endsWith(".png")) {
-    return path.replace(new RegExp(".png" + "$"), "_upscaled-4x.png");
-  }
-  if (path.endsWith(".jpg")) {
-    return path.replace(new RegExp(".jpg" + "$"), "_upscaled-4x.jpg");
-  }
-  if (path.endsWith(".jpeg")) {
-    return path.replace(new RegExp(".jpeg" + "$"), "_upscaled-4x.jpeg");
-  }
-  return path + "_upscaled-4x.png";
-}
-
-/**
  * Upscales multiple images function.
  *
  * It will ask the user to select a folder to save the upscaled images.
@@ -264,7 +241,7 @@ async function upscaleMultipleImages() {
   showMultipleFilesProcessingIcon.value = true;
   try {
     for (let i = 0; i < imagePaths.value.length; i++) {
-      let outputFile = add_upscale_to_path(imagePaths.value[i].path);
+      let outputFile: string = await invoke('replace_file_suffix', { path: imagePaths.value[i].path })
 
       outputFile = `${outputFolder}/${outputFile.split("/").pop()}`;
       await invoke("upscale_single_image", {
@@ -295,7 +272,7 @@ async function upscaleSingleImage() {
     return;
   }
   const imageSavePath = await save({
-    defaultPath: add_upscale_to_path(imagePath.value),
+    defaultPath: await invoke('replace_file_suffix', { path: imagePath.value })
   });
   if (imageSavePath === null) {
     // user cancelled the selection

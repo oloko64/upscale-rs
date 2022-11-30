@@ -102,7 +102,7 @@ pub async fn upscale_single_image(
         Ok(result) => result,
         Err(err) => {
             logger.log(&format!("Failed to upscale image: {}", err));
-            return Err(format!("Failed while await for command: {}", err));
+            Err(format!("Failed while await for command: {}", err))
         }
     }
 }

@@ -11,6 +11,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             utils::read_image_base64,
             utils::get_version,
+            utils::replace_file_suffix,
             commands::upscale_single_image
         ])
         .run(tauri::generate_context!())

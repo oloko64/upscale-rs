@@ -53,6 +53,77 @@ pub fn read_image_base64(path: &str) -> Result<String, String> {
 }
 
 #[tauri::command]
+pub fn replace_file_suffix(path: &str) -> String {
+    if let Some(png) = path.strip_suffix(".png") {
+        png.to_owned() + "_upscaled-4x.png"
+    } else if let Some(jpg) = path.strip_suffix(".jpg") {
+        jpg.to_owned() + "_upscaled-4x.jpg"
+    } else if let Some(jpeg) = path.strip_suffix(".jpeg") {
+        jpeg.to_owned() + "_upscaled-4x.jpeg"
+    } else {
+        path.to_owned() + "_upscaled-4x.png"
+    }
+}
+
+#[tauri::command]
 pub fn get_version() -> String {
     env!("CARGO_PKG_VERSION").to_owned()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_replace_file_suffix_linux() {
+        assert_eq!(
+            replace_file_suffix("/home/user/image.png"),
+            "/home/user/image_upscaled-4x.png"
+        );
+        assert_eq!(
+            replace_file_suffix("/home/user/image.jpg"),
+            "/home/user/image_upscaled-4x.jpg"
+        );
+        assert_eq!(
+            replace_file_suffix("/home/user/image.jpeg"),
+            "/home/user/image_upscaled-4x.jpeg"
+        );
+    }
+
+    #[test]
+    fn test_replace_file_suffix_windows() {
+        assert_eq!(
+            replace_file_suffix(r#"C:\Users\user\image.png"#),
+            r#"C:\Users\user\image_upscaled-4x.png"#
+        );
+        assert_eq!(
+            replace_file_suffix(r#"C:\Users\user\image.jpg"#),
+            r#"C:\Users\user\image_upscaled-4x.jpg"#
+        );
+        assert_eq!(
+            replace_file_suffix(r#"C:\Users\user\image.jpeg"#),
+            r#"C:\Users\user\image_upscaled-4x.jpeg"#
+        );
+    }
+
+    #[test]
+    fn test_replace_file_suffix_no_suffix() {
+        assert_eq!(
+            replace_file_suffix("/home/user/image"),
+            "/home/user/image_upscaled-4x.png"
+        );
+    }
+
+    #[test]
+    fn test_replace_file_suffix_suffix_not_implemented() {
+        assert_eq!(replace_file_suffix("/home/user/image.bmp"), "/home/user/image.bmp_upscaled-4x.png");
+    }
+
+    #[test]
+    fn test_replace_file_suffix_spaces_in_path() {
+        assert_eq!(
+            replace_file_suffix("/home/user two/image with spaces.png"),
+            "/home/user two/image with spaces_upscaled-4x.png"
+        );
+    }
 }

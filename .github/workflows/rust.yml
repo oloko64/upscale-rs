@@ -16,5 +16,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Add Yarn packages
+      run: yarn
+    - name: Build app
+      run: yarn tauri build
     - name: Run tests
       run: cd src-tauri && cargo test --verbose

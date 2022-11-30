@@ -93,7 +93,7 @@ pub async fn upscale_single_image(
                 _ => (),
             }
         }
-        logger.log(&format!("{}", String::from_utf8_lossy(&command_buffer)));
+        logger.log(String::from_utf8_lossy(&command_buffer).as_ref());
         Ok(String::from("Upscaling finished successfully"))
     });
 

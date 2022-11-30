@@ -2,6 +2,8 @@
 
 ![upscale-rs-horizontal](https://user-images.githubusercontent.com/49915167/203207059-1ed3fd08-6cff-4068-a9d7-5b2559d1fb94.png)
 
+[![Upscale-rs Workflow](https://github.com/OLoKo64/upscale-rs/actions/workflows/rust.yml/badge.svg)](https://github.com/OLoKo64/upscale-rs/actions/workflows/rust.yml)
+
 A GUI image upscaler making use of [Tauri](https://tauri.app/) and [Vue3](https://vuejs.org/) with [Vuetify](https://next.vuetifyjs.com/en/) as it's component library.
 
 Using the [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) model under the hood.

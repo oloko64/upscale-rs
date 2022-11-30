@@ -1,4 +1,24 @@
-use std::{fs::File, io::Read};
+use std::{fs::File, io::{Read, Write}, path::PathBuf};
+
+pub(crate) struct Logger {
+    path: PathBuf,
+}
+
+impl Logger {
+    pub fn new() -> Self {
+        let path = dirs::cache_dir().expect("Failed to locate cache directory").join("upscale-rs.log");
+        Self { path }
+    }
+
+    pub fn log_file_path(&self) -> String {
+        self.path.to_str().expect("Failed to convert path to string").to_string()
+    }
+
+    pub fn log(&self, message: &str) {
+        let mut file = File::create(&self.path).expect("Failed to create log file");
+        file.write_all(message.as_bytes()).expect("Failed to write to log file");
+    }
+}
 
 /// Reads a file and returns its contents as a string of base64.
 #[tauri::command]

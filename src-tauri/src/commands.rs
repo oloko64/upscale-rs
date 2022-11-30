@@ -2,6 +2,8 @@ use std::io::{self, Write};
 
 use tauri::api::process::{Command, CommandEvent};
 
+use crate::utils;
+
 enum UpscaleTypes {
     General,
     Digital,
@@ -20,7 +22,7 @@ impl UpscaleTypes {
 /// Upscales a single image.
 ///
 /// Currently the upscale_factor is not used, but it is kept for future use.
-/// 
+///
 /// The comment part of this function is for the Windows version of the program.
 /// When building it for Windows, you need to comment the Linux line and uncomment the Windows line.
 #[tauri::command]
@@ -39,6 +41,7 @@ pub async fn upscale_single_image(
     );
 
     let command = tauri::async_runtime::spawn(async move {
+        let logger = utils::Logger::new();
         let upscale_type_model = match upscale_type.as_str() {
             "general" => UpscaleTypes::General,
             "digital" => UpscaleTypes::Digital,
@@ -63,6 +66,7 @@ pub async fn upscale_single_image(
             {
                 Ok((rx, child)) => (rx, child),
                 Err(e) => {
+                    logger.log(&format!("Failed to spawn command: {}", e));
                     return Err(format!(
                         "Failed to spawn process \"realesrgan-ncnn-vulkan\": {}",
                         e
@@ -70,27 +74,35 @@ pub async fn upscale_single_image(
                 }
             };
 
+        let mut command_buffer = Vec::new();
+
         while let Some(event) = rx.recv().await {
             match event {
                 CommandEvent::Stderr(data) | CommandEvent::Stdout(data) => {
+                    write!(&mut command_buffer, "{}", data).expect("Failed to write to buffer");
                     println!("{}", data);
                 }
                 CommandEvent::Terminated(process) => {
                     if process.code.expect("Failed to get process exit code") != 0 {
                         // This flush is needed to make sure the output is printed before the error is returned.
                         io::stdout().flush().expect("Failed to flush stdout");
-                        return Err("Process exited with non-zero exit code.\nFor more information run the app from a terminal and check the output."
-                                .to_owned(),
+                        return Err(format!("Process exited with non-zero exit code.\nFor more information run the app from a terminal and check the output.\nOr check the log file located at {}", logger.log_file_path())
                         );
                     }
                 }
                 _ => (),
             }
         }
+        logger.log(&format!("{}", String::from_utf8_lossy(&command_buffer)));
         Ok(String::from("Upscaling finished successfully"))
     });
+
+    let logger = utils::Logger::new();
     match command.await {
         Ok(result) => result,
-        Err(e) => Err(format!("Failed while await for command: {}", e)),
+        Err(e) => {
+            logger.log(&format!("Failed to upscale image: {}", e));
+            return Err(format!("Failed while await for command: {}", e));
+        }
     }
 }

@@ -1,22 +1,35 @@
-use std::{fs::File, io::{Read, Write}, path::PathBuf};
+use std::{
+    fs::File,
+    io::{Read, Write},
+    path::PathBuf,
+};
 
-pub(crate) struct Logger {
+pub struct Logger {
     path: PathBuf,
 }
 
 impl Logger {
+    /// Create a new logger.
     pub fn new() -> Self {
-        let path = dirs::cache_dir().expect("Failed to locate cache directory").join("upscale-rs.log");
+        let path = dirs::cache_dir()
+            .expect("Failed to locate cache directory")
+            .join("upscale-rs.log");
         Self { path }
     }
 
+    /// Returns the path to the log file.
     pub fn log_file_path(&self) -> String {
-        self.path.to_str().expect("Failed to convert path to string").to_string()
+        self.path
+            .to_str()
+            .expect("Failed to convert path to string")
+            .to_string()
     }
 
+    /// Write a message to the log file. If the file does not exist, it will be created. If it does exist, it will be overwritten.
     pub fn log(&self, message: &str) {
         let mut file = File::create(&self.path).expect("Failed to create log file");
-        file.write_all(message.as_bytes()).expect("Failed to write to log file");
+        file.write_all(message.as_bytes())
+            .expect("Failed to write to log file");
     }
 }
 

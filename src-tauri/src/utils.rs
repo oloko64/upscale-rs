@@ -72,6 +72,7 @@ pub fn read_image_base64(path: &str) -> Result<String, String> {
     Ok(base64::encode(buffer))
 }
 
+/// Replaces the suffix of the given path with `_upscaled-4x.<extension>`
 #[tauri::command]
 pub fn replace_file_suffix(path: &str) -> String {
     if let Some(png) = path.strip_suffix(".png") {
@@ -85,6 +86,7 @@ pub fn replace_file_suffix(path: &str) -> String {
     }
 }
 
+/// Loads the configuration file and creates a default one if it does not exist or if it is invalid.
 #[tauri::command]
 pub fn load_configuration() -> Result<ConfigData, String> {
     let mut config = configuration::Config::new(None);
@@ -96,6 +98,7 @@ pub fn load_configuration() -> Result<ConfigData, String> {
     }
 }
 
+/// Validates the ConfigData values and writes the configuration file.
 #[tauri::command]
 pub fn write_configuration(config: ConfigData) -> Result<(), String> {
     let config = configuration::Config::new(Some(config));

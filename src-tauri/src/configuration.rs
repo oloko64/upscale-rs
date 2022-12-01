@@ -16,10 +16,12 @@ pub struct ConfigData {
 }
 
 impl ConfigData {
+    /// Returns a default configuration.
     pub fn default() -> Self {
         DEFAULT_CONFIG
     }
 
+    /// Returns the value of the upscale-logs key in the `ConfigData`.
     pub fn get_is_active_upscale_logs(&self) -> bool {
         self.upscale_logs
     }
@@ -31,6 +33,7 @@ pub struct Config {
 }
 
 impl Config {
+    /// Create a new config with the content as None or the content of `ConfigData` passed as argument.
     pub fn new(config: Option<ConfigData>) -> Self {
         Self::create_config_folder(CONFIG_FOLDER).expect("Failed to create config folder");
         let path = dirs::config_dir()
@@ -44,24 +47,28 @@ impl Config {
         }
     }
 
+    /// Loads the config file and returns its content as a Option of `ConfigData`.
     pub fn load(&mut self) -> Result<Option<ConfigData>, Box<dyn Error>> {
         let content = std::fs::read_to_string(&self.path)?;
         self.content = serde_json::from_str(&content)?;
         Ok(self.content.clone())
     }
 
+    /// Write the config to the config file.
     pub fn save(&self) -> Result<(), Box<dyn Error>> {
         let content = serde_json::to_string_pretty(&self.content)?;
         std::fs::write(&self.path, content)?;
         Ok(())
     }
 
+    /// Create a config folder in the config directory.
     fn create_config_folder(folder: &str) -> Result<(), Box<dyn Error>> {
         let path = dirs::config_dir().ok_or("Failed to get config directory")?;
         std::fs::create_dir_all(path.join(folder))?;
         Ok(())
     }
 
+    /// Create a new config with default values and returns this default value.
     pub fn create_default_config_file(&self) -> Result<ConfigData, Box<dyn Error>> {
         std::fs::write(
             &self.path,

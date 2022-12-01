@@ -36,7 +36,7 @@ pub async fn upscale_single_image(
         "Upscaling image: {} with the following configuration:
         -> Save path: {}
         -> Upscale factor: {} ### NOT WORKING ATM ###
-        -> Upscale type: {}",
+        -> Upscale type: {}\n",
         &path, &save_path, &upscale_factor, &upscale_type
     );
     println!("{}", &upscale_information);

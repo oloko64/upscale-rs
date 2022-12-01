@@ -2,10 +2,10 @@
   <div class="container">
     <h2>Options</h2>
     <v-switch
-      v-model="options['application-logs']"
+      v-model="options['upscale-logs']"
       inset
       class="ml-5"
-      label="Application logs"
+      label="Save logs of the upscaling process"
     ></v-switch>
   </div>
 </template>
@@ -14,11 +14,11 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { watch, ref, onMounted } from "vue";
 
 interface Configuration {
-  ["application-logs"]: boolean;
+  ["upscale-logs"]: boolean;
 }
 
 const options = ref<Configuration>({
-  ["application-logs"]: false,
+  ["upscale-logs"]: false,
 });
 
 onMounted(async () => {
@@ -26,7 +26,11 @@ onMounted(async () => {
   options.value = config;
 });
 
-watch(options.value, async () => {
-  await invoke("write_configuration", { config: options.value });
-});
+watch(
+  () => options.value,
+  async (updatedValue) => {
+    await invoke("write_configuration", { config: updatedValue });
+  },
+  { deep: true }
+);
 </script>

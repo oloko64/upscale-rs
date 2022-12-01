@@ -1,10 +1,10 @@
 use std::{
-    fs::File,
+    fs::{File, OpenOptions},
     io::{Read, Write},
     path::PathBuf,
 };
 
-use crate::configuration::{self, ConfigData};
+use crate::configuration::{self, ConfigData, CONFIG_FOLDER, LOG_FILE};
 
 pub struct Logger {
     path: PathBuf,
@@ -13,9 +13,10 @@ pub struct Logger {
 impl Logger {
     /// Create a new logger.
     pub fn new() -> Self {
-        let path = dirs::cache_dir()
+        let path = dirs::config_dir()
             .expect("Failed to locate cache directory")
-            .join("upscale-rs.log");
+            .join(CONFIG_FOLDER)
+            .join(LOG_FILE);
         Self { path }
     }
 
@@ -33,12 +34,22 @@ impl Logger {
             Ok(config) => config,
             Err(_) => ConfigData::default(),
         };
-        if !config.get_application_logs() {
+        if !config.get_is_active_upscale_logs() {
             return;
         }
-        let mut file = File::create(&self.path).expect("Failed to create log file");
-        file.write_all(message.as_bytes())
-            .expect("Failed to write to log file");
+        let mut file = OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&self.path)
+            .expect("Failed to open log file");
+        file.write_all(
+            format!(
+                "{}\n###################################################################\n",
+                message
+            )
+            .as_bytes(),
+        )
+        .expect("Failed to write to log file");
     }
 }
 
@@ -79,11 +90,9 @@ pub fn load_configuration() -> Result<ConfigData, String> {
     let mut config = configuration::Config::new(None);
     match config.load() {
         Ok(config) => Ok(config.ok_or("Failed to load configuration")?),
-        Err(_) => {
-            return config
-                .create_default_config_file()
-                .map_err(|err| err.to_string())
-        }
+        Err(_) => Ok(config
+            .create_default_config_file()
+            .map_err(|err| err.to_string())?),
     }
 }
 

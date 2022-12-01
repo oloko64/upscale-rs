@@ -32,18 +32,18 @@ pub async fn upscale_single_image(
     upscale_factor: String,
     upscale_type: String,
 ) -> Result<String, String> {
-    println!(
+    let upscale_information = format!(
         "Upscaling image: {} with the following configuration:
         -> Save path: {}
         -> Upscale factor: {} ### NOT WORKING ATM ###
         -> Upscale type: {}",
         &path, &save_path, &upscale_factor, &upscale_type
     );
+    println!("{}", &upscale_information);
 
     let command = tauri::async_runtime::spawn(async move {
         let logger = utils::Logger::new();
         let upscale_type_model = match upscale_type.as_str() {
-            "general" => UpscaleTypes::General,
             "digital" => UpscaleTypes::Digital,
             _ => UpscaleTypes::General,
         };
@@ -75,6 +75,7 @@ pub async fn upscale_single_image(
             };
 
         let mut command_buffer = Vec::new();
+        write!(&mut command_buffer, "{}", upscale_information).expect("Failed to write to buffer");
 
         while let Some(event) = rx.recv().await {
             match event {

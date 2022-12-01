@@ -2,16 +2,17 @@ use std::{error::Error, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-const CONFIG_FOLDER: &str = "upscale-rs";
+pub const CONFIG_FOLDER: &str = "upscale-rs";
+pub const LOG_FILE: &str = "upscale-rs.log";
 const CONFIG_FILE: &str = "upscale-rs-config.json";
 const DEFAULT_CONFIG: ConfigData = ConfigData {
-    application_logs: false,
+    upscale_logs: false,
 };
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct ConfigData {
-    #[serde(rename = "application-logs")]
-    application_logs: bool,
+    #[serde(rename = "upscale-logs")]
+    upscale_logs: bool,
 }
 
 impl ConfigData {
@@ -19,8 +20,8 @@ impl ConfigData {
         DEFAULT_CONFIG
     }
 
-    pub fn get_application_logs(&self) -> bool {
-        self.application_logs
+    pub fn get_is_active_upscale_logs(&self) -> bool {
+        self.upscale_logs
     }
 }
 

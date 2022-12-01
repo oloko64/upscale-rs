@@ -91,7 +91,7 @@ pub fn replace_file_suffix(path: &str) -> String {
 pub fn load_configuration() -> Result<ConfigData, String> {
     let mut config = configuration::Config::new(None);
     match config.load() {
-        Ok(config) => Ok(config.ok_or("Failed to load configuration")?),
+        Ok(config) => Ok(config),
         Err(_) => Ok(config
             .create_default_config_file()
             .map_err(|err| err.to_string())?),

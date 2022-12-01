@@ -24,6 +24,16 @@ impl ConfigData {
         }
     }
 
+    fn validate_config(&self) -> Result<(), Box<dyn Error>> {
+        if [String::from("general"), String::from("digital")]
+            .contains(&self.get_default_upscale_type())
+        {
+            Ok(())
+        } else {
+            Err("Invalid default upscale type".into())
+        }
+    }
+
     /// Returns the value of the application-logs key in the `ConfigData`.
     pub fn get_is_active_application_logs(&self) -> bool {
         self.application_logs
@@ -56,19 +66,17 @@ impl Config {
     }
 
     /// Loads the config file and returns its content as a Option of `ConfigData`.
-    pub fn load(&mut self) -> Result<Option<ConfigData>, Box<dyn Error>> {
+    pub fn load(&mut self) -> Result<ConfigData, Box<dyn Error>> {
         let content = std::fs::read_to_string(&self.path)?;
         self.content = serde_json::from_str(&content)?;
-        if [String::from("general"), String::from("digital")].contains(
-            &self
-                .content
-                .clone()
-                .ok_or("Failed to load config file")?
-                .get_default_upscale_type(),
-        ) {
-            Ok(self.content.clone())
-        } else {
-            Err("Invalid default upscale type".into())
+        match self
+            .content
+            .as_ref()
+            .ok_or("Failed to load config file")?
+            .validate_config()
+        {
+            Ok(_) => Ok(self.content.clone().ok_or("Failed to load config file")?),
+            Err(err) => Err(err),
         }
     }
 

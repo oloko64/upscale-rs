@@ -8,7 +8,7 @@
       class="ml-5"
       label="Save application logs"
     ></v-switch>
-    <v-divider class="ml-5 mb-5 mt-2 options-spacer" />
+    <v-divider class="ml-5 mr-5 mb-5 mt-2" />
     <v-select
       class="select-fields ml-5"
       label="Default Upscale Type"
@@ -65,9 +65,5 @@ watch(
 <style scoped lang="scss">
 .select-fields {
   width: 300px;
-}
-
-.options-spacer {
-  width: 350px;
 }
 </style>

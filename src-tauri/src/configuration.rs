@@ -29,10 +29,10 @@ impl ConfigData {
         self.application_logs
     }
 
-    // /// Returns the value of the default-upscale-type key in the `ConfigData`.
-    // pub fn get_default_upscale_type(&self) -> String {
-    //     self.default_upscale_type.clone()
-    // }
+    /// Returns the value of the default-upscale-type key in the `ConfigData`.
+    pub fn get_default_upscale_type(&self) -> String {
+        self.default_upscale_type.clone()
+    }
 }
 
 pub struct Config {
@@ -59,7 +59,17 @@ impl Config {
     pub fn load(&mut self) -> Result<Option<ConfigData>, Box<dyn Error>> {
         let content = std::fs::read_to_string(&self.path)?;
         self.content = serde_json::from_str(&content)?;
-        Ok(self.content.clone())
+        if [String::from("general"), String::from("digital")].contains(
+            &self
+                .content
+                .clone()
+                .ok_or("Failed to load config file")?
+                .get_default_upscale_type(),
+        ) {
+            Ok(self.content.clone())
+        } else {
+            Err("Invalid default upscale type".into())
+        }
     }
 
     /// Write the config to the config file.

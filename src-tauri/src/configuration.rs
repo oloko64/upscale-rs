@@ -24,6 +24,7 @@ impl ConfigData {
         }
     }
 
+    /// Validates the `ConfigData` struct.
     fn validate_config(&self) -> Result<(), Box<dyn Error>> {
         if [String::from("general"), String::from("digital")]
             .contains(&self.get_default_upscale_type())

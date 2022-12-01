@@ -49,8 +49,19 @@
         Clear
       </v-btn>
       <div class="d-flex">
-        <img class="mb-3 about-logo-redirect" src="../assets/upscale-rs-horizontal.png" width="200" @click="openAboutPage" />
-        <v-btn elevation="0" class="config-button ml-4" size="32" :icon="mdiMenu" @click="openConfig"></v-btn>
+        <img
+          class="mb-3 about-logo-redirect"
+          src="../assets/upscale-rs-horizontal.png"
+          width="200"
+          @click="openAboutPage"
+        />
+        <v-btn
+          elevation="0"
+          class="config-button ml-4"
+          size="32"
+          :icon="mdiMenu"
+          @click="openConfig"
+        ></v-btn>
       </div>
     </div>
     <div class="image-area mt-5" :class="{ 'text-center': !isMultipleFiles }">
@@ -263,7 +274,9 @@ async function upscaleMultipleImages() {
   showMultipleFilesProcessingIcon.value = true;
   try {
     for (let i = 0; i < imagePaths.value.length; i++) {
-      let outputFile: string = await invoke('replace_file_suffix', { path: imagePaths.value[i].path })
+      let outputFile: string = await invoke("replace_file_suffix", {
+        path: imagePaths.value[i].path,
+      });
 
       outputFile = `${outputFolder}/${outputFile.split("/").pop()}`;
       await invoke("upscale_single_image", {
@@ -294,7 +307,7 @@ async function upscaleSingleImage() {
     return;
   }
   const imageSavePath = await save({
-    defaultPath: await invoke('replace_file_suffix', { path: imagePath.value })
+    defaultPath: await invoke("replace_file_suffix", { path: imagePath.value }),
   });
   if (imageSavePath === null) {
     // user cancelled the selection

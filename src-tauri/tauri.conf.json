@@ -55,7 +55,6 @@
     },
     "windows": [
       {
-        "theme": "Dark",
         "fullscreen": false,
         "height": 573,
         "resizable": false,

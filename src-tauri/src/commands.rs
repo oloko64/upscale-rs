@@ -56,7 +56,7 @@ pub async fn upscale_single_image(
                     "-o",
                     &save_path,
                     "-m",
-                    // ".\models",
+                    // r#".\models"#,
                     "./lib/upscale-rs/models",
                     "-n",
                     upscale_type_model.upscale_type_as_str(),

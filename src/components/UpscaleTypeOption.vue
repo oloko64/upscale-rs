@@ -22,7 +22,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
+import { invoke } from "@tauri-apps/api/tauri";
 
 const props = defineProps<{
   disabled: boolean;
@@ -32,6 +33,18 @@ const props = defineProps<{
 const selectType = ref("general");
 
 const emit = defineEmits(["upscale-type-changed"]);
+
+onMounted(async () => {
+  try {
+    const config = await invoke<{ ["default-upscale-type"]: string }>(
+      "load_configuration"
+    );
+    selectType.value = config["default-upscale-type"];
+  } catch (error: any) {
+    await invoke("write_log", { message: error.toString() });
+    alert(error);
+  }
+});
 
 // Watch for the select between `general` and `digital` type and sends selected type to the parent component.
 watch(selectType, (value) => {

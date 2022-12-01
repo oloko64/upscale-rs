@@ -42,7 +42,6 @@ pub async fn upscale_single_image(
     println!("{}", &upscale_information);
 
     let command = tauri::async_runtime::spawn(async move {
-        let logger = utils::Logger::new();
         let upscale_type_model = match upscale_type.as_str() {
             "digital" => UpscaleTypes::Digital,
             _ => UpscaleTypes::General,
@@ -66,7 +65,6 @@ pub async fn upscale_single_image(
             {
                 Ok((rx, child)) => (rx, child),
                 Err(err) => {
-                    logger.log(&format!("Failed to spawn command: {}", err));
                     return Err(format!(
                         "Failed to spawn process \"realesrgan-ncnn-vulkan\": {}",
                         err
@@ -74,6 +72,7 @@ pub async fn upscale_single_image(
                 }
             };
 
+        let logger = utils::Logger::new();
         let mut command_buffer = Vec::new();
         write!(&mut command_buffer, "{}", upscale_information).expect("Failed to write to buffer");
 
@@ -94,16 +93,12 @@ pub async fn upscale_single_image(
                 _ => (),
             }
         }
-        logger.log(String::from_utf8_lossy(&command_buffer).as_ref());
+        utils::write_log(String::from_utf8_lossy(&command_buffer).as_ref());
         Ok(String::from("Upscaling finished successfully"))
     });
 
-    let logger = utils::Logger::new();
     match command.await {
         Ok(result) => result,
-        Err(err) => {
-            logger.log(&format!("Failed to upscale image: {}", err));
-            Err(format!("Failed while await for command: {}", err))
-        }
+        Err(err) => Err(format!("Failed while await for command: {}", err)),
     }
 }

@@ -4,8 +4,8 @@
 )]
 
 mod commands;
-mod utils;
 mod configuration;
+mod utils;
 
 fn main() {
     tauri::Builder::default()
@@ -15,6 +15,7 @@ fn main() {
             utils::replace_file_suffix,
             utils::load_configuration,
             utils::write_configuration,
+            utils::write_log,
             commands::upscale_single_image
         ])
         .run(tauri::generate_context!())

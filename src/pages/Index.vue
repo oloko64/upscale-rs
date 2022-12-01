@@ -237,7 +237,8 @@ async function openImage() {
     try {
       const imageBytes = await invoke("read_image_base64", { path: selected });
       imageBlob.value = `data:image/png;base64,${imageBytes}`;
-    } catch (err) {
+    } catch (err: any) {
+      await invoke("write_log", { message: err.toString() });
       alert(err);
     }
   }
@@ -287,7 +288,8 @@ async function upscaleMultipleImages() {
       });
       imagePaths.value[i].isReady = true;
     }
-  } catch (err) {
+  } catch (err: any) {
+    await invoke("write_log", { message: err.toString() });
     alert(err);
   } finally {
     isProcessing.value = false;
@@ -322,7 +324,8 @@ async function upscaleSingleImage() {
       upscaleType: upscaleType.value,
     });
     alert(output);
-  } catch (err) {
+  } catch (err: any) {
+    await invoke("write_log", { message: err.toString() });
     alert(err);
   } finally {
     isProcessing.value = false;

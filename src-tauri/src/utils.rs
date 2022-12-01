@@ -34,7 +34,7 @@ impl Logger {
             Ok(config) => config,
             Err(_) => ConfigData::default(),
         };
-        if !config.get_is_active_upscale_logs() {
+        if !config.get_is_active_application_logs() {
             return;
         }
         let mut file = OpenOptions::new()
@@ -103,6 +103,13 @@ pub fn load_configuration() -> Result<ConfigData, String> {
 pub fn write_configuration(config: ConfigData) -> Result<(), String> {
     let config = configuration::Config::new(Some(config));
     config.save().map_err(|err| err.to_string())
+}
+
+/// Write to the log file.
+#[tauri::command]
+pub fn write_log(message: &str) {
+    let logger = Logger::new();
+    logger.log(message);
 }
 
 #[tauri::command]

@@ -5,26 +5,34 @@ use serde::{Deserialize, Serialize};
 pub const CONFIG_FOLDER: &str = "upscale-rs";
 pub const LOG_FILE: &str = "upscale-rs.log";
 const CONFIG_FILE: &str = "upscale-rs-config.json";
-const DEFAULT_CONFIG: ConfigData = ConfigData {
-    upscale_logs: false,
-};
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct ConfigData {
-    #[serde(rename = "upscale-logs")]
-    upscale_logs: bool,
+    #[serde(rename = "application-logs")]
+    application_logs: bool,
+
+    #[serde(rename = "default-upscale-type")]
+    default_upscale_type: String,
 }
 
 impl ConfigData {
     /// Returns a default configuration.
-    pub fn default() -> Self {
-        DEFAULT_CONFIG
+    pub fn default() -> ConfigData {
+        Self {
+            application_logs: false,
+            default_upscale_type: String::from("general"),
+        }
     }
 
-    /// Returns the value of the upscale-logs key in the `ConfigData`.
-    pub fn get_is_active_upscale_logs(&self) -> bool {
-        self.upscale_logs
+    /// Returns the value of the application-logs key in the `ConfigData`.
+    pub fn get_is_active_application_logs(&self) -> bool {
+        self.application_logs
     }
+
+    // /// Returns the value of the default-upscale-type key in the `ConfigData`.
+    // pub fn get_default_upscale_type(&self) -> String {
+    //     self.default_upscale_type.clone()
+    // }
 }
 
 pub struct Config {

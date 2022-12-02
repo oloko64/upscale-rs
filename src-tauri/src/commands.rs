@@ -2,6 +2,8 @@ use std::io::{self, Write};
 
 use tauri::api::process::{Command, CommandEvent};
 
+use crate::utils;
+
 enum UpscaleTypes {
     General,
     Digital,
@@ -20,6 +22,9 @@ impl UpscaleTypes {
 /// Upscales a single image.
 ///
 /// Currently the upscale_factor is not used, but it is kept for future use.
+///
+/// The comment part of this function is for the Windows version of the program.
+/// When building it for Windows, you need to comment the Linux line and uncomment the Windows line.
 #[tauri::command]
 pub async fn upscale_single_image(
     path: String,
@@ -27,22 +32,23 @@ pub async fn upscale_single_image(
     upscale_factor: String,
     upscale_type: String,
 ) -> Result<String, String> {
-    println!(
+    let upscale_information = format!(
         "Upscaling image: {} with the following configuration:
         -> Save path: {}
         -> Upscale factor: {} ### NOT WORKING ATM ###
-        -> Upscale type: {}",
+        -> Upscale type: {}\n",
         &path, &save_path, &upscale_factor, &upscale_type
     );
+    println!("{}", &upscale_information);
 
     let command = tauri::async_runtime::spawn(async move {
         let upscale_type_model = match upscale_type.as_str() {
-            "general" => UpscaleTypes::General,
             "digital" => UpscaleTypes::Digital,
             _ => UpscaleTypes::General,
         };
 
         let (mut rx, mut _child) =
+            // match Command::new(r#".\resources\realesrgan-ncnn-vulkan.exe"#)
             match Command::new("./lib/upscale-rs/resources/linux/bin/realesrgan-ncnn-vulkan")
                 .args([
                     "-i",
@@ -50,6 +56,7 @@ pub async fn upscale_single_image(
                     "-o",
                     &save_path,
                     "-m",
+                    // r#".\models"#,
                     "./lib/upscale-rs/models",
                     "-n",
                     upscale_type_model.upscale_type_as_str(),
@@ -57,35 +64,41 @@ pub async fn upscale_single_image(
                 .spawn()
             {
                 Ok((rx, child)) => (rx, child),
-                Err(e) => {
+                Err(err) => {
                     return Err(format!(
                         "Failed to spawn process \"realesrgan-ncnn-vulkan\": {}",
-                        e
+                        err
                     ));
                 }
             };
 
+        let logger = utils::Logger::new();
+        let mut command_buffer = Vec::new();
+        write!(&mut command_buffer, "{}", upscale_information).expect("Failed to write to buffer");
+
         while let Some(event) = rx.recv().await {
             match event {
                 CommandEvent::Stderr(data) | CommandEvent::Stdout(data) => {
+                    write!(&mut command_buffer, "{}", data).expect("Failed to write to buffer");
                     println!("{}", data);
                 }
                 CommandEvent::Terminated(process) => {
                     if process.code.expect("Failed to get process exit code") != 0 {
                         // This flush is needed to make sure the output is printed before the error is returned.
                         io::stdout().flush().expect("Failed to flush stdout");
-                        return Err("Process exited with non-zero exit code.\nFor more information run the app from a terminal and check the output."
-                                .to_owned(),
+                        return Err(format!("Process exited with non-zero exit code.\nFor more information run the app from a terminal and check the output.\nOr check the log file located at {}", logger.log_file_path())
                         );
                     }
                 }
                 _ => (),
             }
         }
+        utils::write_log(String::from_utf8_lossy(&command_buffer).as_ref());
         Ok(String::from("Upscaling finished successfully"))
     });
+
     match command.await {
         Ok(result) => result,
-        Err(e) => Err(format!("Failed while await for command: {}", e)),
+        Err(err) => Err(format!("Failed while await for command: {}", err)),
     }
 }

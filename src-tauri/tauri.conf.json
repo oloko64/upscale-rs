@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "upscale-rs",
-    "version": "0.1.6"
+    "version": "0.1.7"
   },
   "tauri": {
     "allowlist": {
@@ -55,7 +55,6 @@
     },
     "windows": [
       {
-        "theme": "Dark",
         "fullscreen": false,
         "height": 573,
         "resizable": false,

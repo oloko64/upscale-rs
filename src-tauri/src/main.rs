@@ -4,6 +4,7 @@
 )]
 
 mod commands;
+mod configuration;
 mod utils;
 
 fn main() {
@@ -11,6 +12,10 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             utils::read_image_base64,
             utils::get_version,
+            utils::replace_file_suffix,
+            utils::load_configuration,
+            utils::write_configuration,
+            utils::write_log,
             commands::upscale_single_image
         ])
         .run(tauri::generate_context!())

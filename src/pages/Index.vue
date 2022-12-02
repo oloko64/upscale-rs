@@ -48,7 +48,21 @@
       >
         Clear
       </v-btn>
-      <img class="mb-3 about-logo-redirect" src="../assets/upscale-rs-horizontal.png" width="200" @click="openAboutPage" />
+      <div class="d-flex">
+        <img
+          class="mb-3 about-logo-redirect"
+          src="../assets/upscale-rs-horizontal.png"
+          width="200"
+          @click="openAboutPage"
+        />
+        <v-btn
+          elevation="0"
+          class="config-button ml-4"
+          size="32"
+          :icon="mdiMenu"
+          @click="openConfig"
+        ></v-btn>
+      </div>
     </div>
     <div class="image-area mt-5" :class="{ 'text-center': !isMultipleFiles }">
       <h4 class="mb-2">{{ imagePath }}</h4>
@@ -95,7 +109,7 @@ import { ref, Ref, watch, computed } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
 import { open, save } from "@tauri-apps/api/dialog";
 import UpscaleTypeOption from "../components/UpscaleTypeOption.vue";
-import { mdiFileImage, mdiImageCheck, mdiTimelineQuestion } from "@mdi/js";
+import { mdiFileImage, mdiImageCheck, mdiMenu } from "@mdi/js";
 import { WebviewWindow } from "@tauri-apps/api/window";
 
 interface ImagePathsDisplay {
@@ -156,6 +170,25 @@ function setUpscaleType(value: UpscaleType) {
   upscaleType.value = value;
 }
 
+function openConfig() {
+  // https://tauri.app/v1/guides/features/multiwindow#create-a-window-in-javascript
+  const webview = new WebviewWindow("config-page", {
+    height: 400,
+    width: 500,
+    title: "Config",
+    url: "/config",
+  });
+  // since the webview window is created asynchronously,
+  // Tauri emits the `tauri://created` and `tauri://error` to notify you of the creation response
+  webview.once("tauri://created", function () {
+    // webview window successfully created
+  });
+  webview.once("tauri://error", function (err) {
+    alert(err);
+    // an error happened creating the webview window
+  });
+}
+
 /**
  * Clears the selected image and some other variables.
  */
@@ -204,7 +237,8 @@ async function openImage() {
     try {
       const imageBytes = await invoke("read_image_base64", { path: selected });
       imageBlob.value = `data:image/png;base64,${imageBytes}`;
-    } catch (err) {
+    } catch (err: any) {
+      await invoke("write_log", { message: err.toString() });
       alert(err);
     }
   }
@@ -221,29 +255,6 @@ function startProcessing() {
   } else {
     upscaleSingleImage();
   }
-}
-
-/**
- * Renames the given path adding the new `_upscaled-4x` suffix.
- *
- * This is used to avoid overwriting the original image.
- *
- * If the given path does not ends with `.png`, `.jpg` or `jpeg` it will add `_upscaled-4x.png` to the path.
- *
- * @param path - The path to be renamed.
- * @returns The renamed path.
- */
-function add_upscale_to_path(path: string) {
-  if (path.endsWith(".png")) {
-    return path.replace(new RegExp(".png" + "$"), "_upscaled-4x.png");
-  }
-  if (path.endsWith(".jpg")) {
-    return path.replace(new RegExp(".jpg" + "$"), "_upscaled-4x.jpg");
-  }
-  if (path.endsWith(".jpeg")) {
-    return path.replace(new RegExp(".jpeg" + "$"), "_upscaled-4x.jpeg");
-  }
-  return path + "_upscaled-4x.png";
 }
 
 /**
@@ -264,7 +275,9 @@ async function upscaleMultipleImages() {
   showMultipleFilesProcessingIcon.value = true;
   try {
     for (let i = 0; i < imagePaths.value.length; i++) {
-      let outputFile = add_upscale_to_path(imagePaths.value[i].path);
+      let outputFile: string = await invoke("replace_file_suffix", {
+        path: imagePaths.value[i].path,
+      });
 
       outputFile = `${outputFolder}/${outputFile.split("/").pop()}`;
       await invoke("upscale_single_image", {
@@ -275,7 +288,8 @@ async function upscaleMultipleImages() {
       });
       imagePaths.value[i].isReady = true;
     }
-  } catch (err) {
+  } catch (err: any) {
+    await invoke("write_log", { message: err.toString() });
     alert(err);
   } finally {
     isProcessing.value = false;
@@ -295,7 +309,7 @@ async function upscaleSingleImage() {
     return;
   }
   const imageSavePath = await save({
-    defaultPath: add_upscale_to_path(imagePath.value),
+    defaultPath: await invoke("replace_file_suffix", { path: imagePath.value }),
   });
   if (imageSavePath === null) {
     // user cancelled the selection
@@ -310,7 +324,8 @@ async function upscaleSingleImage() {
       upscaleType: upscaleType.value,
     });
     alert(output);
-  } catch (err) {
+  } catch (err: any) {
+    await invoke("write_log", { message: err.toString() });
     alert(err);
   } finally {
     isProcessing.value = false;
@@ -342,9 +357,15 @@ async function upscaleSingleImage() {
 }
 
 .about-logo-redirect {
-  margin-top: 161px;
+  margin-top: 158px;
+  margin-left: 2px;
   margin-bottom: 0px !important;
+  height: 30px;
   cursor: pointer;
+}
+
+.config-button {
+  margin-top: 158px;
 }
 .options-column {
   display: flex;

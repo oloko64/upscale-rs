@@ -14,7 +14,7 @@
     "sass": "^1.56.1",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6",
-    "vuetify": "^3.0.1"
+    "vuetify": "^3.0.3"
   },
   "devDependencies": {
     "@mdi/js": "^7.0.96",

@@ -65,9 +65,8 @@
       </div>
     </div>
     <div class="image-area mt-5" :class="{ 'text-center': !isMultipleFiles }">
-      <h4 class="mb-2">{{ imagePath }}</h4>
-      <h4 class="mb-2" :key="imagePath.path" v-for="imagePath in imagePaths">
-        {{ imagePath.path }}
+      <h5 class="mb-2 path-text">{{ imagePath }}</h5>
+      <h5 class="mb-2 path-text" :key="imagePath.path" v-for="imagePath in imagePaths">
         <v-progress-circular
           v-if="!imagePath.isReady"
           v-show="showMultipleFilesProcessingIcon"
@@ -81,8 +80,9 @@
           :icon="mdiImageCheck"
           v-show="showMultipleFilesProcessingIcon"
         />
+        <span class="ml-2">{{ imagePath.path }}</span>
         <v-divider />
-      </h4>
+      </h5>
       <v-progress-circular
         class="loading-gif"
         color="primary"
@@ -91,6 +91,17 @@
         :width="12"
         v-if="isProcessing && !isMultipleFiles"
       />
+      <div
+        class="file-drop-area mt-8"
+        v-if="!imageBlob && !imagePaths.length"
+        @click="openImage"
+      >
+        {{
+          !isMultipleFiles
+            ? "Click here to select an image"
+            : "Click here to select images"
+        }}
+      </div>
       <v-img
         class="image-src"
         :src="imageBlob"
@@ -292,6 +303,7 @@ async function upscaleMultipleImages() {
     await invoke("write_log", { message: err.toString() });
     alert(err);
   } finally {
+    showMultipleFilesProcessingIcon.value = false;
     isProcessing.value = false;
   }
 }
@@ -348,6 +360,27 @@ async function upscaleSingleImage() {
   min-width: 500px;
   min-height: 500px;
 }
+
+.path-text {
+  font-size: 14px;
+  font-weight: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-drop-area {
+  min-width: 500px;
+  min-height: 500px;
+  border: 2px dashed rgba($color: #969696, $alpha: 0.4);
+  border-radius: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  cursor: pointer;
+}
+
 .outer-box {
   display: flex;
   flex-direction: row;

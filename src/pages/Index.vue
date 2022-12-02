@@ -110,13 +110,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, Ref, watch, computed } from "vue";
-import { invoke } from "@tauri-apps/api/tauri";
-import { open, save } from "@tauri-apps/api/dialog";
+import { ref, Ref, computed } from "vue";
 import UpscaleTypeOption from "../components/UpscaleTypeOption.vue";
 import { mdiFileImage, mdiImageCheck, mdiMenu } from "@mdi/js";
-import { WebviewWindow } from "@tauri-apps/api/window";
+import { invoke } from "@tauri-apps/api/tauri";
 import { listen } from "@tauri-apps/api/event";
+import { open, save } from "@tauri-apps/api/dialog";
+import { WebviewWindow } from "@tauri-apps/api/window";
 
 interface ImagePathsDisplay {
   path: string;

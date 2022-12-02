@@ -148,7 +148,7 @@ const isReadyToUpscale = computed(() => {
  */
 listen("tauri://file-drop", async (event) => {
   const files = event.payload as string[];
-  if (!files.length) {
+  if (!files.length || isProcessing.value) {
     return;
   }
   clearSelectedImage();

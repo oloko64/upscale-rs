@@ -1,14 +1,8 @@
 <template>
   <div class="outer-box">
     <div class="options-column">
-      <v-switch
-        v-model="isMultipleFiles"
-        inset
-        hide-details
-        :disabled="isProcessing"
-        label="Multiple Images"
-      ></v-switch>
       <v-btn
+        class="mt-8"
         size="large"
         rounded="lg"
         :prepend-icon="mdiFileImage"
@@ -16,7 +10,7 @@
         elevation="0"
         @click="openImage"
       >
-        {{ isMultipleFiles ? "Select Images" : "Select Image" }}
+        Select Images
       </v-btn>
       <UpscaleTypeOption
         :disabled="isProcessing"
@@ -65,8 +59,12 @@
       </div>
     </div>
     <div class="image-area mt-5" :class="{ 'text-center': !isMultipleFiles }">
-      <h5 class="mb-2 path-text">{{ imagePath }}</h5>
-      <h5 class="mb-2 path-text" :key="imagePath.path" v-for="imagePath in imagePaths">
+      <h5 class="mb-2 path-text" v-if="imagePath">{{ imagePath }}</h5>
+      <h5
+        class="mb-2 path-text"
+        :key="imagePath.path"
+        v-for="imagePath in imagePaths"
+      >
         <v-progress-circular
           v-if="!imagePath.isReady"
           v-show="showMultipleFilesProcessingIcon"
@@ -96,11 +94,7 @@
         v-if="!imageBlob && !imagePaths.length"
         @click="openImage"
       >
-        {{
-          !isMultipleFiles
-            ? "Click here to select an image"
-            : "Click here to select images"
-        }}
+        Click here to select images or drop them here
       </div>
       <v-img
         class="image-src"
@@ -122,6 +116,7 @@ import { open, save } from "@tauri-apps/api/dialog";
 import UpscaleTypeOption from "../components/UpscaleTypeOption.vue";
 import { mdiFileImage, mdiImageCheck, mdiMenu } from "@mdi/js";
 import { WebviewWindow } from "@tauri-apps/api/window";
+import { listen } from "@tauri-apps/api/event";
 
 interface ImagePathsDisplay {
   path: string;
@@ -148,9 +143,54 @@ const isReadyToUpscale = computed(() => {
   );
 });
 
-// Watch for the switch between single and multiple files and run the function that clear some variables.
-watch(isMultipleFiles, () => {
+/**
+ * Listens for file drops on the window.
+ */
+listen("tauri://file-drop", async (event) => {
+  const files = event.payload as string[];
+  if (!files.length) {
+    return;
+  }
   clearSelectedImage();
+  if (files.length > 1) {
+    showMultipleFilesProcessingIcon.value = false;
+    isMultipleFiles.value = true;
+    imagePaths.value = files
+      .map((file) => {
+        return {
+          path: file,
+          isReady: false,
+        };
+      })
+      .filter((file) => {
+        return (
+          file.path.endsWith(".png") ||
+          file.path.endsWith(".jpg") ||
+          file.path.endsWith(".jpeg")
+        );
+      });
+  } else {
+    isMultipleFiles.value = false;
+    if (
+      !(
+        files[0].endsWith(".png") ||
+        files[0].endsWith(".jpg") ||
+        files[0].endsWith(".jpeg")
+      )
+    ) {
+      alert("Please select a valid image file.");
+      return;
+    }
+    try {
+      const imageBytes = await invoke("read_image_base64", { path: files[0] });
+      imageBlob.value = `data:image/png;base64,${imageBytes}`;
+      imagePath.value = files[0];
+    } catch (err) {
+      await invoke("write_log", {
+        message: `Error reading image: ${err}`,
+      });
+    }
+  }
 });
 
 function openAboutPage() {
@@ -208,6 +248,7 @@ function clearSelectedImage() {
   imagePaths.value = [];
   imageBlob.value = "";
   showMultipleFilesProcessingIcon.value = false;
+  isMultipleFiles.value = false;
 }
 
 /**
@@ -225,7 +266,7 @@ function clearSelectedImage() {
 async function openImage() {
   // Open a selection dialog for image files
   const selected = await open({
-    multiple: isMultipleFiles.value,
+    multiple: true,
     filters: [
       {
         name: "",
@@ -233,7 +274,9 @@ async function openImage() {
       },
     ],
   });
-  if (Array.isArray(selected)) {
+  if (Array.isArray(selected) && selected.length > 1) {
+    clearSelectedImage();
+    isMultipleFiles.value = true;
     showMultipleFilesProcessingIcon.value = false;
     imagePaths.value = selected.map((path) => {
       return {
@@ -244,9 +287,13 @@ async function openImage() {
   } else if (selected === null) {
     // user cancelled the selection
   } else {
-    imagePath.value = selected;
+    clearSelectedImage();
+    isMultipleFiles.value = false;
+    imagePath.value = selected[0];
     try {
-      const imageBytes = await invoke("read_image_base64", { path: selected });
+      const imageBytes = await invoke("read_image_base64", {
+        path: imagePath.value,
+      });
       imageBlob.value = `data:image/png;base64,${imageBytes}`;
     } catch (err: any) {
       await invoke("write_log", { message: err.toString() });
@@ -390,7 +437,7 @@ async function upscaleSingleImage() {
 }
 
 .about-logo-redirect {
-  margin-top: 158px;
+  margin-top: 180px;
   margin-left: 2px;
   margin-bottom: 0px !important;
   height: 30px;
@@ -398,7 +445,7 @@ async function upscaleSingleImage() {
 }
 
 .config-button {
-  margin-top: 158px;
+  margin-top: 180px;
 }
 .options-column {
   display: flex;

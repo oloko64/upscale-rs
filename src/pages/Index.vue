@@ -3,7 +3,7 @@
     <div class="options-column">
       <img
           class="mb-3 about-logo-redirect"
-          src="../assets/upscale-rs-horizontal.png"
+          :src="HorizontalLogo"
           width="200"
           @click="openAboutPage"
         />
@@ -111,6 +111,7 @@
 
 <script setup lang="ts">
 import { ref, Ref, computed } from "vue";
+import HorizontalLogo from '../assets/upscale-rs-horizontal.png';
 import UpscaleTypeOption from "../components/UpscaleTypeOption.vue";
 import { mdiFileImage, mdiImageCheck, mdiMenu } from "@mdi/js";
 import { invoke } from "@tauri-apps/api/tauri";

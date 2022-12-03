@@ -94,7 +94,7 @@
         v-if="!imageBlob && !imagePaths.length"
         @click="openImage"
       >
-        Click here to select images or drop them here
+        Click to select images or drop them here
       </div>
       <v-img
         class="image-src"

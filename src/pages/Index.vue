@@ -1,8 +1,14 @@
 <template>
   <div class="outer-box">
     <div class="options-column">
+      <img
+          class="mb-3 about-logo-redirect"
+          src="../assets/upscale-rs-horizontal.png"
+          width="200"
+          @click="openAboutPage"
+        />
       <v-btn
-        class="mt-8"
+        class="mt-6"
         size="large"
         rounded="lg"
         :prepend-icon="mdiFileImage"
@@ -43,15 +49,9 @@
         Clear
       </v-btn>
       <div class="d-flex">
-        <img
-          class="mb-3 about-logo-redirect"
-          src="../assets/upscale-rs-horizontal.png"
-          width="200"
-          @click="openAboutPage"
-        />
         <v-btn
           elevation="0"
-          class="config-button ml-4"
+          class="config-button"
           size="32"
           :icon="mdiMenu"
           @click="openConfig"
@@ -144,7 +144,7 @@ const isReadyToUpscale = computed(() => {
 });
 
 /**
- * Listens for file drops on the window.
+ * Listens for file drops on the window and decides if is a single or multiple file upload.
  */
 listen("tauri://file-drop", async (event) => {
   const files = event.payload as string[];
@@ -347,10 +347,10 @@ async function upscaleMultipleImages() {
       imagePaths.value[i].isReady = true;
     }
   } catch (err: any) {
+    showMultipleFilesProcessingIcon.value = false;
     await invoke("write_log", { message: err.toString() });
     alert(err);
   } finally {
-    showMultipleFilesProcessingIcon.value = false;
     isProcessing.value = false;
   }
 }
@@ -437,7 +437,6 @@ async function upscaleSingleImage() {
 }
 
 .about-logo-redirect {
-  margin-top: 180px;
   margin-left: 2px;
   margin-bottom: 0px !important;
   height: 30px;
@@ -445,7 +444,7 @@ async function upscaleSingleImage() {
 }
 
 .config-button {
-  margin-top: 180px;
+  margin-top: 160px;
 }
 .options-column {
   display: flex;

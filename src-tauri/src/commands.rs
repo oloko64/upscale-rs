@@ -86,6 +86,7 @@ pub async fn upscale_single_image(
                     if process.code.expect("Failed to get process exit code") != 0 {
                         // This flush is needed to make sure the output is printed before the error is returned.
                         io::stdout().flush().expect("Failed to flush stdout");
+                        utils::write_log(String::from_utf8_lossy(&command_buffer).as_ref());
                         return Err(format!("Process exited with non-zero exit code.\nFor more information run the app from a terminal and check the output.\nOr check the log file located at {}", logger.log_file_path())
                         );
                     }

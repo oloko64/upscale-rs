@@ -10,9 +10,9 @@ Using the [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) model under the 
 
 ## Currently in beta and active development.
 
-# Interface (WIP)
+# Interface
 
-![upscale-rs-interface-beta2](https://user-images.githubusercontent.com/49915167/205288930-88673e51-6983-4c20-b959-d64c9c41c718.png)
+![upscale-rs-interface-beta3](https://user-images.githubusercontent.com/49915167/205464600-4b899a1d-3775-4757-92ef-20bd947c69d4.png)
 
 # Upscaling Sample
 

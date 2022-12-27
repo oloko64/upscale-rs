@@ -1,37 +1,27 @@
 <template>
   <div class="container">
     <h2>Options</h2>
-    <v-switch
-      v-model="options['application-logs']"
-      hide-details
-      inset
-      class="ml-5"
-      label="Save application logs"
-    ></v-switch>
+    <v-switch v-model="options['application-logs']" hide-details inset class="ml-5" label="Save application logs"
+      @change="write_configuration()" />
     <v-divider class="ml-5 mr-5 mb-5 mt-2" />
-    <v-select
-      class="select-fields ml-5"
-      label="Default Upscale Type"
-      v-model="options['default-upscale-type']"
-      variant="solo"
-      :items="[
-        {
-          text: 'General Image',
-          value: 'general',
-        },
-        {
-          text: 'Digital Image',
-          value: 'digital',
-        },
-      ]"
-      item-title="text"
-      item-value="value"
-    ></v-select>
+    <v-select class="select-fields ml-5" label="Default Upscale Type" v-model="options['default-upscale-type']"
+      variant="solo" :items="optionsUpscaleType" item-title="text" item-value="value" @change="write_configuration()" />
   </div>
 </template>
 <script setup lang="ts">
 import { invoke } from "@tauri-apps/api/tauri";
-import { watch, ref, onMounted } from "vue";
+import { ref, onMounted } from "vue";
+
+const optionsUpscaleType = [
+  {
+    text: 'General Image',
+    value: 'general',
+  },
+  {
+    text: 'Digital Image',
+    value: 'digital',
+  },
+];
 
 interface Configuration {
   ["application-logs"]: boolean;
@@ -49,17 +39,9 @@ onMounted(async () => {
   }
 });
 
-watch(
-  () => options.value,
-  async (updatedValue) => {
-    try {
-      await invoke("write_configuration", { config: updatedValue });
-    } catch (error) {
-      alert(error);
-    }
-  },
-  { deep: true }
-);
+function write_configuration() {
+  invoke("write_configuration", { config: options.value });
+}
 </script>
 
 <style scoped lang="scss">

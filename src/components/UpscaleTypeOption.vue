@@ -1,29 +1,24 @@
 <template>
   <div class="upscale-types">
-    <v-select
-      :disabled="props.disabled"
-      label="Upscale Type"
-      v-model="selectType"
-      variant="solo"
-      :items="[
-        {
-          text: 'General Image',
-          value: 'general',
-        },
-        {
-          text: 'Digital Image',
-          value: 'digital',
-        },
-      ]"
-      item-title="text"
-      item-value="value"
-    ></v-select>
+    <v-select :disabled="props.disabled" label="Upscale Type" v-model="selectType" variant="solo"
+      :items="upscaleTypeOptions" item-title="text" item-value="value" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
+
+const upscaleTypeOptions = [
+  {
+    text: 'General Image',
+    value: 'general',
+  },
+  {
+    text: 'Digital Image',
+    value: 'digital',
+  },
+];
 
 const props = defineProps<{
   disabled: boolean;

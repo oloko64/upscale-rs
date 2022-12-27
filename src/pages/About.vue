@@ -6,9 +6,9 @@
       <v-divider class="mb-5" />
       <div class="text-left">
         <p><strong>Version: </strong>v{{ appVersion }}</p>
-        <p><strong>License: </strong>{{'MIT'}}</p>
-        <p><strong>Author: </strong>{{'OLoKo64 <reinaldorozatoj.11cg1@aleeas.com>'}}</p>
-        <p><strong>Repository: </strong>{{'https://github.com/OLoKo64/upscale-rs'}}</p>
+        <p><strong>License: </strong>{{ 'MIT' }}</p>
+        <p><strong>Author: </strong>{{ 'OLoKo64 <reinaldorozatoj.11cg1@aleeas.com>' }}</p>
+        <p><strong>Repository: </strong>{{ 'https://github.com/OLoKo64/upscale-rs' }}</p>
       </div>
     </div>
   </div>

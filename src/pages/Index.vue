@@ -1,110 +1,44 @@
 <template>
   <div class="outer-box">
     <div class="options-column">
-      <img
-          class="mb-3 about-logo-redirect"
-          :src="HorizontalLogo"
-          width="200"
-          @click="openAboutPage"
-        />
-      <v-btn
-        class="mt-6"
-        size="large"
-        rounded="lg"
-        :prepend-icon="mdiFileImage"
-        :disabled="isProcessing"
-        elevation="0"
-        @click="openImage"
-      >
+      <img class="mb-3 about-logo-redirect" :src="HorizontalLogo" width="200" @click="openAboutPage" />
+      <v-btn class="mt-6" size="large" rounded="lg" :prepend-icon="mdiFileImage" :disabled="isProcessing" elevation="0"
+        @click="openImage">
         Select Images
       </v-btn>
-      <UpscaleTypeOption
-        :disabled="isProcessing"
-        class="mt-2 mb-5"
-        @upscale-type-changed="setUpscaleType"
-      />
+      <UpscaleTypeOption :disabled="isProcessing" class="mt-2 mb-5" @upscale-type-changed="setUpscaleType" />
       <v-divider class="mb-10" />
       <!-- Scale factor seems not to be working -->
       <!-- <UpscaleFactorOptions @upscale-factor-changed="updateUpscaleFactor" /> -->
-      <v-btn
-        size="large"
-        rounded="lg"
-        class="mb-2"
-        :disabled="isReadyToUpscale"
-        elevation="0"
-        width="310"
-        @click="startProcessing"
-      >
+      <v-btn size="large" rounded="lg" class="mb-2" :disabled="isReadyToUpscale" elevation="0" width="310"
+        @click="startProcessing">
         {{
-          isMultipleFiles ? "Upscale Selected Images" : "Upscale Selected Image"
-        }}
+    isMultipleFiles ? "Upscale Selected Images" : "Upscale Selected Image"
+}}
       </v-btn>
-      <v-btn
-        size="large"
-        rounded="lg"
-        :disabled="isProcessing"
-        elevation="0"
-        @click="clearSelectedImage"
-      >
+      <v-btn size="large" rounded="lg" :disabled="isProcessing" elevation="0" @click="clearSelectedImage">
         Clear
       </v-btn>
       <div class="d-flex">
-        <v-btn
-          elevation="0"
-          class="config-button"
-          size="32"
-          :icon="mdiMenu"
-          @click="openConfig"
-        ></v-btn>
+        <v-btn elevation="0" class="config-button" size="32" :icon="mdiMenu" @click="openConfig"></v-btn>
       </div>
     </div>
     <div class="image-area mt-5" :class="{ 'text-center': !isMultipleFiles }">
       <h5 class="mb-2 path-text" v-if="imagePath">{{ imagePath }}</h5>
-      <h5
-        class="mb-2 path-text"
-        :key="imagePath.path"
-        v-for="imagePath in imagePaths"
-      >
-        <v-progress-circular
-          v-if="!imagePath.isReady"
-          v-show="showMultipleFilesProcessingIcon"
-          indeterminate
-          color="primary"
-          size="16"
-        />
-        <v-icon
-          v-else
-          size="16"
-          :icon="mdiImageCheck"
-          v-show="showMultipleFilesProcessingIcon"
-        />
+      <h5 class="mb-2 path-text" :key="imagePath.path" v-for="imagePath in imagePaths">
+        <v-progress-circular v-if="!imagePath.isReady" v-show="showMultipleFilesProcessingIcon" indeterminate
+          color="primary" size="16" />
+        <v-icon v-else size="16" :icon="mdiImageCheck" v-show="showMultipleFilesProcessingIcon" />
         <span class="ml-2">{{ imagePath.path }}</span>
         <v-divider />
       </h5>
-      <v-progress-circular
-        class="loading-gif"
-        color="primary"
-        indeterminate
-        :size="128"
-        :width="12"
-        v-if="isProcessing && !isMultipleFiles"
-      />
-      <div
-        class="file-drop-area mt-8"
-        v-if="!imageBlob && !imagePaths.length"
-        @click="openImage"
-      >
+      <v-progress-circular class="loading-gif" color="primary" indeterminate :size="128" :width="12"
+        v-if="isProcessing && !isMultipleFiles" />
+      <div class="file-drop-area mt-8" v-if="!imageBlob && !imagePaths.length" @click="openImage">
         Click to select images or drop them here
       </div>
-      <v-img
-        class="image-src"
-        :src="imageBlob"
-        width="500"
-        height="500"
-        aspect-ratio="1"
-        cover
-        v-if="!!imageBlob"
-      />
+      <v-img class="image-src" :src="imageBlob" width="500" height="500" aspect-ratio="1" cover v-if="!!imageBlob" />
+      <ImagePreviewer :images="[imageBlob, upscaledImageBlob]" v-if="upscaledImageBlob" />
     </div>
   </div>
 </template>
@@ -113,8 +47,10 @@
 import { ref, Ref, computed } from "vue";
 import HorizontalLogo from '../assets/upscale-rs-horizontal.png';
 import UpscaleTypeOption from "../components/UpscaleTypeOption.vue";
+import ImagePreviewer from "../components/ImagePreviewer.vue";
 import { mdiFileImage, mdiImageCheck, mdiMenu } from "@mdi/js";
 import { invoke } from "@tauri-apps/api/tauri";
+import { loadImage } from "../helpers/loadImageBase64"
 import { listen } from "@tauri-apps/api/event";
 import { open, save } from "@tauri-apps/api/dialog";
 import { WebviewWindow } from "@tauri-apps/api/window";
@@ -131,6 +67,7 @@ const isProcessing = ref(false);
 const imagePath = ref("");
 const imagePaths: Ref<ImagePathsDisplay[]> = ref([]);
 const imageBlob = ref("");
+const upscaledImageBlob = ref("");
 const upscaleFactor: Ref<UpscaleFactor> = ref("4");
 const upscaleType: Ref<UpscaleType> = ref("general");
 const isMultipleFiles = ref(false);
@@ -171,22 +108,22 @@ listen("tauri://file-drop", async (event) => {
         );
       });
   } else {
+    const image = files[0]
     isMultipleFiles.value = false;
     if (
       !(
-        files[0].endsWith(".png") ||
-        files[0].endsWith(".jpg") ||
-        files[0].endsWith(".jpeg")
+        image.endsWith(".png") ||
+        image.endsWith(".jpg") ||
+        image.endsWith(".jpeg")
       )
     ) {
       alert("Please select a valid image file.");
       return;
     }
     try {
-      const imageBytes = await invoke("read_image_base64", { path: files[0] });
-      imageBlob.value = `data:image/png;base64,${imageBytes}`;
-      imagePath.value = files[0];
-    } catch (err) {
+      imageBlob.value = await loadImage(image);
+      imagePath.value = image;
+    } catch (err: any) {
       await invoke("write_log", {
         message: `Error reading image: ${err}`,
       });
@@ -208,7 +145,7 @@ function openAboutPage() {
     // webview window successfully created
   });
   webview.once("tauri://error", function (err) {
-    alert(err);
+    console.error(err);
     // an error happened creating the webview window
   });
 }
@@ -236,7 +173,7 @@ function openConfig() {
     // webview window successfully created
   });
   webview.once("tauri://error", function (err) {
-    alert(err);
+    console.error(err);
     // an error happened creating the webview window
   });
 }
@@ -248,6 +185,7 @@ function clearSelectedImage() {
   imagePath.value = "";
   imagePaths.value = [];
   imageBlob.value = "";
+  upscaledImageBlob.value = "";
   showMultipleFilesProcessingIcon.value = false;
   isMultipleFiles.value = false;
 }
@@ -292,10 +230,7 @@ async function openImage() {
     isMultipleFiles.value = false;
     imagePath.value = selected[0];
     try {
-      const imageBytes = await invoke("read_image_base64", {
-        path: imagePath.value,
-      });
-      imageBlob.value = `data:image/png;base64,${imageBytes}`;
+      imageBlob.value = await loadImage(imagePath.value);
     } catch (err: any) {
       await invoke("write_log", { message: err.toString() });
       alert(err);
@@ -384,6 +319,13 @@ async function upscaleSingleImage() {
       upscaleType: upscaleType.value,
     });
     alert(output);
+
+    // Load the upscaled image
+    try {
+      upscaledImageBlob.value = await loadImage(imageSavePath);
+    } catch (err: any) {
+      await invoke("write_log", { message: err.toString() });
+    }
   } catch (err: any) {
     await invoke("write_log", { message: err.toString() });
     alert(err);
@@ -400,10 +342,12 @@ async function upscaleSingleImage() {
   margin-top: 190px;
   position: fixed;
 }
+
 .image-src {
   border-radius: 24px;
   border: 2px solid rgba($color: #969696, $alpha: 0.4);
 }
+
 .image-area {
   min-width: 500px;
   min-height: 500px;
@@ -447,6 +391,7 @@ async function upscaleSingleImage() {
 .config-button {
   margin-top: 160px;
 }
+
 .options-column {
   display: flex;
   flex-direction: column;

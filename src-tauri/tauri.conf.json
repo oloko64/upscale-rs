@@ -12,7 +12,24 @@
   },
   "tauri": {
     "allowlist": {
-      "all": true
+      "notification": {
+        "all": true
+      },
+      "os": {
+        "all": true
+      },
+      "fs": {
+        "all": true
+      },
+      "shell": {
+        "all": true
+      },
+      "window": {
+        "all": true
+      },
+      "dialog": {
+        "all": true
+      }
     },
     "bundle": {
       "active": true,
@@ -38,7 +55,10 @@
         "providerShortName": null,
         "signingIdentity": null
       },
-      "resources": ["./models/**/*", "./resources/**/*"],
+      "resources": [
+        "./models/**/*",
+        "./resources/**/*"
+      ],
       "shortDescription": "",
       "targets": "all",
       "windows": {

@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import { invoke } from "@tauri-apps/api/tauri";
 import { onMounted, ref } from "vue";
-import HorizontalLogo from '../assets/upscale-rs-horizontal.png';
+import HorizontalLogo from '@/assets/upscale-rs-horizontal.png';
 
 const appVersion = ref("");
 

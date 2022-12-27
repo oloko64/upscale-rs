@@ -45,12 +45,13 @@
 
 <script setup lang="ts">
 import { ref, Ref, computed } from "vue";
-import HorizontalLogo from '../assets/upscale-rs-horizontal.png';
-import UpscaleTypeOption from "../components/UpscaleTypeOption.vue";
-import ImagePreviewer from "../components/ImagePreviewer.vue";
+import HorizontalLogo from '@/assets/upscale-rs-horizontal.png';
+import UpscaleTypeOption from "@/components/UpscaleTypeOption.vue";
+import ImagePreviewer from "@/components/ImagePreviewer.vue";
 import { mdiFileImage, mdiImageCheck, mdiMenu } from "@mdi/js";
 import { invoke } from "@tauri-apps/api/tauri";
-import { loadImage } from "../helpers/loadImageBase64"
+import { loadImage } from "@/helpers/loadImageBase64"
+import { sendTauriNotification } from "@/helpers/tauriNotification"
 import { listen } from "@tauri-apps/api/event";
 import { open, save } from "@tauri-apps/api/dialog";
 import { WebviewWindow } from "@tauri-apps/api/window";
@@ -281,6 +282,7 @@ async function upscaleMultipleImages() {
         upscaleType: upscaleType.value,
       });
       imagePaths.value[i].isReady = true;
+      sendTauriNotification("Upscale-rs", "All images have been upscaled successfully!");
     }
   } catch (err: any) {
     showMultipleFilesProcessingIcon.value = false;
@@ -318,7 +320,7 @@ async function upscaleSingleImage() {
       upscaleFactor: upscaleFactor.value,
       upscaleType: upscaleType.value,
     });
-    alert(output);
+    sendTauriNotification("Upscale-rs", "The image was upscaled successfully!");
 
     // Load the upscaled image
     try {

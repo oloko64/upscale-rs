@@ -2,7 +2,7 @@
     <div>
         <viewer :images="images" />
         <div :class="{ 'preview-area': !isProcessing }" @click="showImagePreviewer">
-            <v-img class="image-src" :src="imageSrc" width="500" height="500" aspect-ratio="1" cover />
+            <v-img :class="{ 'image-src-on-hover': !isProcessing }" class="image-src" :src="imageSrc" width="500" height="500" aspect-ratio="1" cover />
         </div>
     </div>
 </template>
@@ -61,7 +61,7 @@ export default defineComponent({
     cursor: pointer;
 }
 
-.image-src:hover {
+.image-src-on-hover:hover {
     filter: brightness(0.8);
     border: 2px solid rgba($color: #969696, $alpha: 0.8);
 }

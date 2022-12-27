@@ -37,7 +37,6 @@ export default defineComponent({
 </script>
 <style scoped lang="scss">
 .show-image-preview {
-    z-index: 1;
     top: 500px;
     left: 500px;
     position: fixed;

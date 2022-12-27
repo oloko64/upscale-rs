@@ -37,8 +37,7 @@
       <div class="file-drop-area mt-8" v-if="!imageBlob && !imagePaths.length" @click="openImage">
         Click to select images or drop them here
       </div>
-      <v-img class="image-src" :src="imageBlob" width="500" height="500" aspect-ratio="1" cover v-if="!!imageBlob" />
-      <ImagePreviewer :images="[imageBlob, upscaledImageBlob]" v-if="upscaledImageBlob" />
+      <ImagePreviewer :images="[imageBlob, upscaledImageBlob]" :is-processing="isProcessing" v-if="imageBlob" />
     </div>
   </div>
 </template>
@@ -343,11 +342,6 @@ async function upscaleSingleImage() {
   margin-left: -70px;
   margin-top: 190px;
   position: fixed;
-}
-
-.image-src {
-  border-radius: 24px;
-  border: 2px solid rgba($color: #969696, $alpha: 0.4);
 }
 
 .image-area {

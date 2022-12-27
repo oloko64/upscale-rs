@@ -1,8 +1,8 @@
 <template>
     <div>
         <viewer :images="images" />
-        <div class="show-image-preview">
-            <v-btn elevation="0" @click="showImagePreviewer">Click to preview images</v-btn>
+        <div :class="{ 'preview-area': !isProcessing }" @click="showImagePreviewer">
+            <v-img class="image-src" :src="imageSrc" width="500" height="500" aspect-ratio="1" cover />
         </div>
     </div>
 </template>
@@ -13,22 +13,32 @@ export default defineComponent({
         images: {
             type: Array,
             default: () => []
+        },
+        isProcessing: {
+            type: Boolean,
+            default: false
+        }
+    },
+    computed: {
+        imageSrc() {
+            return this.images[0] as string
         }
     },
     methods: {
         showImagePreviewer() {
+            if (this.isProcessing) {
+                return
+            }
             this.$viewerApi({
                 images: this.images as string[],
                 options: {
                     inline: true,
-                    button: false,
                     toolbar: false,
                     title: false,
                     tooltip: false,
                     rotatable: false,
                     scalable: false,
                     fullscreen: false,
-                    keyboard: false,
                 },
             })
         },
@@ -40,5 +50,19 @@ export default defineComponent({
     top: 500px;
     left: 500px;
     position: fixed;
+}
+
+.image-src {
+    border-radius: 24px;
+    border: 2px solid rgba($color: #969696, $alpha: 0.4);
+}
+
+.preview-area {
+    cursor: pointer;
+}
+
+.image-src:hover {
+    filter: brightness(0.8);
+    border: 2px solid rgba($color: #969696, $alpha: 0.8);
 }
 </style>

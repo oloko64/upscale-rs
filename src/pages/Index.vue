@@ -37,7 +37,7 @@
       <div class="file-drop-area mt-8" v-if="!imageBlob && !imagePaths.length" @click="openImage">
         Click to select images or drop them here
       </div>
-      <ImagePreviewer :images="[imageBlob, upscaledImageBlob]" :is-processing="isProcessing" v-if="imageBlob" />
+      <ImagePreviewer :images="[upscaledImageBlob, imageBlob]" :is-processing="isProcessing" v-if="imageBlob" />
     </div>
   </div>
 </template>

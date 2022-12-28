@@ -27,12 +27,12 @@
       <h5 class="mb-2 path-text" v-if="imagePath">{{ imagePath }}</h5>
       <h5 class="mb-2 path-text" :key="imagePath.path" v-for="imagePath in imagePaths">
         <v-progress-circular v-if="!imagePath.isReady" v-show="showMultipleFilesProcessingIcon" indeterminate
-          color="primary" size="16" />
+          color="#ff7a00" size="16" />
         <v-icon v-else size="16" :icon="mdiImageCheck" v-show="showMultipleFilesProcessingIcon" />
         <span class="ml-2">{{ imagePath.path }}</span>
         <v-divider />
       </h5>
-      <v-progress-circular class="loading-gif" color="primary" indeterminate :size="128" :width="12"
+      <v-progress-circular class="loading-gif" color="#ff7a00" indeterminate :size="128" :width="12"
         v-if="isProcessing && !isMultipleFiles" />
       <div class="file-drop-area mt-8" v-if="!imageBlob && !imagePaths.length" @click="openImage">
         Click to select images or drop them here

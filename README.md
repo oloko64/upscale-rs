@@ -6,9 +6,7 @@
 
 A GUI image upscaler making use of [Tauri](https://tauri.app/) and [Vue3](https://vuejs.org/) with [Vuetify](https://next.vuetifyjs.com/en/) as it's component library.
 
-Using the [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) model under the hood.
-
-## Currently in beta and active development.
+Using the [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) model under the hood. **It requires a GPU to run**.
 
 # Interface
 

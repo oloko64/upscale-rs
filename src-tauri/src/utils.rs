@@ -54,19 +54,30 @@ impl Logger {
 }
 
 /// Reads a file and returns its contents as a string of base64.
+/// If `max_mb_size` is set, the file must not be larger than the given size in megabytes.
 #[tauri::command]
-pub fn read_image_base64(path: &str) -> Result<String, String> {
+pub fn read_image_base64(path: &str, max_mb_size: Option<u8>) -> Result<String, String> {
     let mut file = match File::open(path) {
         Ok(file) => file,
-        Err(e) => {
-            return Err(format!("Failed to open file: {}", e));
+        Err(err) => {
+            return Err(format!("Failed to open file: {err}"));
         }
     };
     let mut buffer = Vec::new();
     match file.read_to_end(&mut buffer) {
-        Ok(_) => (),
-        Err(e) => {
-            return Err(format!("Failed while reading file to end: {}", e));
+        Ok(_) => {
+            if let Some(max_mb_size) = max_mb_size {
+                // 1 MB = 1048576 bytes
+                if buffer.len() > ((max_mb_size as usize) * 1048576) {
+                    return Err(format!(
+                        "File is too large. Maximum size is set at {} MB.",
+                        max_mb_size
+                    ));
+                }
+            }
+        }
+        Err(err) => {
+            return Err(format!("Failed while reading file: {err}"));
         }
     };
     Ok(base64::encode(buffer))

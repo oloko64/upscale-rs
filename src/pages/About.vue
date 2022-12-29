@@ -6,9 +6,9 @@
       <v-divider class="mb-5" />
       <div class="text-left">
         <p><strong>Version: </strong>v{{ appVersion }}</p>
-        <p><strong>License: </strong>{{'MIT'}}</p>
-        <p><strong>Author: </strong>{{'OLoKo64 <reinaldorozatoj.11cg1@aleeas.com>'}}</p>
-        <p><strong>Repository: </strong>{{'https://github.com/OLoKo64/upscale-rs'}}</p>
+        <p><strong>License: </strong>{{ 'MIT' }}</p>
+        <p><strong>Author: </strong>{{ 'OLoKo64 <reinaldorozatoj.11cg1@aleeas.com>' }}</p>
+        <p><strong>Repository: </strong>{{ 'https://github.com/OLoKo64/upscale-rs' }}</p>
       </div>
     </div>
   </div>
@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import { invoke } from "@tauri-apps/api/tauri";
 import { onMounted, ref } from "vue";
-import HorizontalLogo from '../assets/upscale-rs-horizontal.png';
+import HorizontalLogo from '@/assets/upscale-rs-horizontal.png';
 
 const appVersion = ref("");
 

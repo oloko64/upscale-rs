@@ -1,6 +1,8 @@
 import { createApp } from "vue";
 import "./style.css";
 import App from "./App.vue";
+import 'viewerjs/dist/viewer.css'
+import VueViewer from 'v-viewer'
 
 // Vuetify
 import "vuetify/styles";
@@ -8,6 +10,7 @@ import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
 import { aliases, mdi } from "vuetify/iconsets/mdi-svg";
+
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -34,4 +37,4 @@ const vuetify = createVuetify({
   directives,
 });
 
-createApp(App).use(vuetify).use(router).mount("#app");
+createApp(App).use(vuetify).use(VueViewer).use(router).mount("#app");

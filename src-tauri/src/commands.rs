@@ -74,20 +74,20 @@ pub async fn upscale_single_image(
 
         let logger = utils::Logger::new();
         let mut command_buffer = Vec::new();
-        write!(&mut command_buffer, "{}", upscale_information).expect("Failed to write to buffer");
+        write!(&mut command_buffer, "{upscale_information}").expect("Failed to write to buffer");
 
         while let Some(event) = rx.recv().await {
             match event {
                 CommandEvent::Stderr(data) | CommandEvent::Stdout(data) => {
-                    write!(&mut command_buffer, "{}", data).expect("Failed to write to buffer");
-                    println!("{}", data);
+                    write!(&mut command_buffer, "{data}").expect("Failed to write to buffer");
+                    println!("{data}");
                 }
                 CommandEvent::Terminated(process) => {
                     if process.code.expect("Failed to get process exit code") != 0 {
                         // This flush is needed to make sure the output is printed before the error is returned.
                         io::stdout().flush().expect("Failed to flush stdout");
                         utils::write_log(String::from_utf8_lossy(&command_buffer).as_ref());
-                        return Err(format!("Process exited with non-zero exit code.\nFor more information run the app from a terminal and check the output.\nOr check the log file located at {}", logger.log_file_path())
+                        return Err(format!("Process exited with non-zero exit code.\nYou can enable logs in the options menu and check the log file located at {}", logger.log_file_path())
                         );
                     }
                 }
@@ -100,6 +100,6 @@ pub async fn upscale_single_image(
 
     match command.await {
         Ok(result) => result,
-        Err(err) => Err(format!("Failed while await for command: {}", err)),
+        Err(err) => Err(format!("Failed while await for command: {err}")),
     }
 }

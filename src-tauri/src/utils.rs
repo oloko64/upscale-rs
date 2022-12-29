@@ -70,7 +70,7 @@ pub fn read_image_base64(path: &str, max_mb_size: Option<u8>) -> Result<String, 
                 // 1 MB = 1048576 bytes
                 if buffer.len() > ((max_mb_size as usize) * 1048576) {
                     return Err(format!(
-                        "File is too large. Maximum size is {} MB.",
+                        "File is too large. Maximum size is set at {} MB.",
                         max_mb_size
                     ));
                 }

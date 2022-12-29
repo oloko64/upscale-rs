@@ -6,9 +6,10 @@ import { invoke } from "@tauri-apps/api/tauri";
  * @param path Local path to the image
  * @returns Base64 encoded string of the image
  */
-export async function loadImage(path: string): Promise<string> {
+export async function loadImage(path: string, maxMbSize?: number): Promise<string> {
   const imageBytes = await invoke("read_image_base64", {
     path: path,
+    maxMbSize
   });
   return `data:image/png;base64,${imageBytes}`;
 }

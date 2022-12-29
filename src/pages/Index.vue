@@ -44,21 +44,18 @@
 
 <script setup lang="ts">
 import { ref, Ref, computed } from "vue";
-import HorizontalLogo from '@/assets/upscale-rs-horizontal.png';
+import HorizontalLogo from "@/assets/upscale-rs-horizontal.png";
 import UpscaleTypeOption from "@/components/UpscaleTypeOption.vue";
 import ImagePreviewer from "@/components/ImagePreviewer.vue";
 import { mdiFileImage, mdiImageCheck, mdiMenu } from "@mdi/js";
 import { invoke } from "@tauri-apps/api/tauri";
-import { loadImage } from "@/helpers/loadImageBase64"
-import { sendTauriNotification } from "@/helpers/tauriNotification"
+import { loadImage } from "@/helpers/loadImageBase64";
+import { sendTauriNotification } from "@/helpers/tauriNotification";
 import { listen } from "@tauri-apps/api/event";
 import { open, save } from "@tauri-apps/api/dialog";
 import { WebviewWindow } from "@tauri-apps/api/window";
-
-interface ImagePathsDisplay {
-  path: string;
-  isReady: boolean;
-}
+import { Configuration } from "@/types/configuration";
+import { ImagePathsDisplay } from "@/types/images";
 
 type UpscaleType = "general" | "digital";
 type UpscaleFactor = "2" | "3" | "4";
@@ -108,7 +105,7 @@ listen("tauri://file-drop", async (event) => {
         );
       });
   } else {
-    const image = files[0]
+    const image = files[0];
     isMultipleFiles.value = false;
     if (
       !(
@@ -281,7 +278,10 @@ async function upscaleMultipleImages() {
         upscaleType: upscaleType.value,
       });
       imagePaths.value[i].isReady = true;
-      sendTauriNotification("Upscale-rs", "All images have been upscaled successfully!");
+      sendTauriNotification(
+        "Upscale-rs",
+        "All images have been upscaled successfully!"
+      );
     }
   } catch (err: any) {
     showMultipleFilesProcessingIcon.value = false;
@@ -321,9 +321,13 @@ async function upscaleSingleImage() {
     });
     sendTauriNotification("Upscale-rs", "The image was upscaled successfully!");
 
-    // Load the upscaled image
+    // Load the upscaled image into the image previewer
     try {
-      upscaledImageBlob.value = await loadImage(imageSavePath);
+      const config = await invoke<Configuration>("load_configuration");
+      upscaledImageBlob.value = await loadImage(
+        imageSavePath,
+        config["max-preview-upscale-size"]
+      );
     } catch (err: any) {
       await invoke("write_log", { message: err.toString() });
     }

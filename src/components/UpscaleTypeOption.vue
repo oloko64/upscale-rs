@@ -1,16 +1,7 @@
 <template>
   <div class="upscale-types">
-    <v-select
-      :disabled="props.disabled"
-      label="Upscale Type"
-      v-model="selectType"
-      variant="solo"
-      density="comfortable"
-      :items="upscaleTypeOptions"
-      item-title="text"
-      item-value="value"
-      hide-details
-    />
+    <v-select :disabled="props.disabled" label="Upscale Type" v-model="selectType" variant="solo" density="comfortable"
+      :items="upscaleTypeOptions" item-title="text" item-value="value" hide-details />
   </div>
 </template>
 

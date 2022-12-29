@@ -74,13 +74,13 @@ pub async fn upscale_single_image(
 
         let logger = utils::Logger::new();
         let mut command_buffer = Vec::new();
-        write!(&mut command_buffer, "{}", upscale_information).expect("Failed to write to buffer");
+        write!(&mut command_buffer, "{upscale_information}").expect("Failed to write to buffer");
 
         while let Some(event) = rx.recv().await {
             match event {
                 CommandEvent::Stderr(data) | CommandEvent::Stdout(data) => {
-                    write!(&mut command_buffer, "{}", data).expect("Failed to write to buffer");
-                    println!("{}", data);
+                    write!(&mut command_buffer, "{data}").expect("Failed to write to buffer");
+                    println!("{data}");
                 }
                 CommandEvent::Terminated(process) => {
                     if process.code.expect("Failed to get process exit code") != 0 {
@@ -100,6 +100,6 @@ pub async fn upscale_single_image(
 
     match command.await {
         Ok(result) => result,
-        Err(err) => Err(format!("Failed while await for command: {}", err)),
+        Err(err) => Err(format!("Failed while await for command: {err}")),
     }
 }

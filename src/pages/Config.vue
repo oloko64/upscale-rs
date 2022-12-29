@@ -10,7 +10,7 @@
     <v-divider class="ml-5 mr-5 mb-5 mt-6" />
     <div class="max-size-option">
       <p class="pl-5 ma-0 mb-3">
-        Set a size limit of upscaled images in MB to show in the image previewer
+        Set a size limit of images to show in the image previewer after upscale
         (After 25Mb it can become very laggy)
       </p>
       <v-select class="select-fields ml-5" label="Size in MB" v-model="options['max-preview-upscale-size']"

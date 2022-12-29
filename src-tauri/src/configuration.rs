@@ -13,6 +13,9 @@ pub struct ConfigData {
 
     #[serde(rename = "default-upscale-type")]
     default_upscale_type: String,
+
+    #[serde(rename = "max-preview-upscale-size")]
+    max_preview_upscale_size: u8,
 }
 
 impl ConfigData {
@@ -21,6 +24,7 @@ impl ConfigData {
         Self {
             application_logs: false,
             default_upscale_type: String::from("general"),
+            max_preview_upscale_size: 15,
         }
     }
 

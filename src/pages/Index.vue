@@ -7,7 +7,7 @@
         Select Images
       </v-btn>
       <UpscaleTypeOption :disabled="isProcessing" class="mt-2 mb-5" @upscale-type-changed="setUpscaleType" />
-      <v-divider class="mb-10" />
+      <v-divider class="mb-10 mt-5" />
       <!-- Scale factor seems not to be working -->
       <!-- <UpscaleFactorOptions @upscale-factor-changed="updateUpscaleFactor" /> -->
       <v-btn size="large" rounded="lg" class="mb-2" :disabled="isReadyToUpscale" elevation="0" width="310"
@@ -163,7 +163,7 @@ function openConfig() {
   // https://tauri.app/v1/guides/features/multiwindow#create-a-window-in-javascript
   const webview = new WebviewWindow("config-page", {
     height: 400,
-    width: 500,
+    width: 850,
     title: "Config",
     url: "/config",
   });

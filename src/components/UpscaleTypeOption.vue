@@ -1,7 +1,16 @@
 <template>
   <div class="upscale-types">
-    <v-select :disabled="props.disabled" label="Upscale Type" v-model="selectType" variant="solo"
-      :items="upscaleTypeOptions" item-title="text" item-value="value" />
+    <v-select
+      :disabled="props.disabled"
+      label="Upscale Type"
+      v-model="selectType"
+      variant="solo"
+      density="comfortable"
+      :items="upscaleTypeOptions"
+      item-title="text"
+      item-value="value"
+      hide-details
+    />
   </div>
 </template>
 
@@ -11,12 +20,12 @@ import { invoke } from "@tauri-apps/api/tauri";
 
 const upscaleTypeOptions = [
   {
-    text: 'General Image',
-    value: 'general',
+    text: "General Image",
+    value: "general",
   },
   {
-    text: 'Digital Image',
-    value: 'digital',
+    text: "Digital Image",
+    value: "digital",
   },
 ];
 

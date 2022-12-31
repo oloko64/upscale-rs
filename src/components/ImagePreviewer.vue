@@ -57,14 +57,14 @@ export default defineComponent({
 .show-image-preview {
     top: 500px;
     left: 500px;
-    position: fixed;
+    position: absolute;
 }
 
 .preview-text-back {
     z-index: 1;
     position: absolute;
     top: 440px;
-    left: 180px;
+    left: 165px;
     color: #e7e7e7;
     background-color: rgba(34, 34, 34, 0.7);
     border-radius: 24px;

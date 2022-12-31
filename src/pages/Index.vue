@@ -107,7 +107,7 @@ appWindow.listen("tauri://file-drop", async ({ event, payload }: { event: any, p
         return {
           path: file,
           isReady: false,
-          progressPercentageMulti: DEFAULT_PERCENTAGE,
+          progressPercentageMulti: ref(DEFAULT_PERCENTAGE),
         };
       })
       .filter((file) => {
@@ -231,7 +231,7 @@ async function openImage() {
       return {
         path,
         isReady: false,
-        progressPercentageMulti: DEFAULT_PERCENTAGE,
+        progressPercentageMulti: ref(DEFAULT_PERCENTAGE),
       };
     });
   } else if (selected === null) {
@@ -286,7 +286,9 @@ async function upscaleMultipleImages() {
       });
 
       outputFile = `${outputFolder}/${outputFile.split("/").pop()}`;
-      imagePaths.value[i].progressPercentageMulti = progressPercentage.value;
+      
+      // Copy the progress percentage by reference for the current processing image
+      imagePaths.value[i].progressPercentageMulti = progressPercentage;
       await invoke("upscale_single_image", {
         path: imagePaths.value[i].path,
         savePath: outputFile,

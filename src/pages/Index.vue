@@ -28,7 +28,8 @@
       <h5 class="mb-2 path-text" :key="imagePath.path" v-for="imagePath in imagePaths">
         <v-progress-circular v-if="!imagePath.isReady" v-show="showMultipleFilesProcessingIcon" indeterminate
           color="#ff7a00" size="16" />
-        <span v-show="showMultipleFilesProcessingIcon"> - {{ imagePath.progressPercentageMulti }} |</span>
+        <span v-if="!imagePath.isReady" v-show="showMultipleFilesProcessingIcon"> - {{ imagePath.progressPercentageMulti
+}} |</span>
         <v-icon v-if="imagePath.isReady" size="16" :icon="mdiImageCheck" v-show="showMultipleFilesProcessingIcon" />
         <span class="ml-2">{{ imagePath.path }}</span>
         <v-divider />
@@ -60,7 +61,7 @@ import { Configuration } from "@/types/configuration";
 import { ImagePathsDisplay } from "@/types/images";
 import { appWindow } from "@tauri-apps/api/window";
 
-const DEFAULT_PERCENTAGE = "00.00%";
+const DEFAULT_PERCENTAGE = "0.00%";
 
 type UpscaleType = "general" | "digital";
 type UpscaleFactor = "2" | "3" | "4";
@@ -293,6 +294,7 @@ async function upscaleMultipleImages() {
         upscaleType: upscaleType.value,
       });
       imagePaths.value[i].isReady = true;
+      progressPercentage.value = DEFAULT_PERCENTAGE;
     }
     sendTauriNotification(
       "Upscale-rs",

@@ -286,7 +286,7 @@ async function upscaleMultipleImages() {
       });
 
       outputFile = `${outputFolder}/${outputFile.split("/").pop()}`;
-      
+
       // Copy the progress percentage by reference for the current processing image
       imagePaths.value[i].progressPercentageMulti = progressPercentage;
       await invoke("upscale_single_image", {

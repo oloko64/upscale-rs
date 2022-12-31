@@ -51,11 +51,11 @@ import { mdiFileImage, mdiImageCheck, mdiMenu } from "@mdi/js";
 import { invoke } from "@tauri-apps/api/tauri";
 import { loadImage } from "@/helpers/loadImageBase64";
 import { sendTauriNotification } from "@/helpers/tauriNotification";
-import { listen } from "@tauri-apps/api/event";
 import { open, save } from "@tauri-apps/api/dialog";
 import { WebviewWindow } from "@tauri-apps/api/window";
 import { Configuration } from "@/types/configuration";
 import { ImagePathsDisplay } from "@/types/images";
+import { appWindow } from "@tauri-apps/api/window";
 
 type UpscaleType = "general" | "digital";
 type UpscaleFactor = "2" | "3" | "4";
@@ -78,10 +78,14 @@ const isReadyToUpscale = computed(() => {
   );
 });
 
+appWindow.listen("percentage", ({ event, payload }) => { 
+  console.log(payload)
+});
+
 /**
  * Listens for file drops on the window and decides if is a single or multiple file upload.
  */
-listen("tauri://file-drop", async (event) => {
+ appWindow.listen("tauri://file-drop", async (event) => {
   const files = event.payload as string[];
   if (!files.length || isProcessing.value) {
     return;

@@ -1,6 +1,9 @@
 use std::io::{self, Write};
 
-use tauri::api::process::{Command, CommandEvent};
+use tauri::{
+    api::process::{Command, CommandEvent},
+    Window,
+};
 
 use crate::utils;
 
@@ -31,6 +34,7 @@ pub async fn upscale_single_image(
     save_path: String,
     upscale_factor: String,
     upscale_type: String,
+    window: Window,
 ) -> Result<String, String> {
     let upscale_information = format!(
         "Upscaling image: {} with the following configuration:
@@ -66,8 +70,7 @@ pub async fn upscale_single_image(
                 Ok((rx, child)) => (rx, child),
                 Err(err) => {
                     return Err(format!(
-                        "Failed to spawn process \"realesrgan-ncnn-vulkan\": {}",
-                        err
+                        "Failed to spawn process \"realesrgan-ncnn-vulkan\": {err}",
                     ));
                 }
             };
@@ -80,6 +83,9 @@ pub async fn upscale_single_image(
             match event {
                 CommandEvent::Stderr(data) | CommandEvent::Stdout(data) => {
                     write!(&mut command_buffer, "{data}").expect("Failed to write to buffer");
+                    window
+                        .emit("percentage", &data)
+                        .expect("Failed to emit log event");
                     println!("{data}");
                 }
                 CommandEvent::Terminated(process) => {

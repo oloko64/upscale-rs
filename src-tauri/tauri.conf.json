@@ -56,8 +56,7 @@
         "signingIdentity": null
       },
       "resources": [
-        "./models/**/*",
-        "./resources/**/*"
+        "./resources"
       ],
       "shortDescription": "",
       "targets": "all",

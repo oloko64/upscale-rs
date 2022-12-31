@@ -85,8 +85,8 @@ pub fn read_image_base64(path: &str, max_mb_size: Option<u8>) -> Result<String, 
 
 /// Returns the given string if it ends with a percentage sign.
 pub fn filter_percentage_output(output_str: &str) -> Option<String> {
-    if output_str.ends_with("%") {
-        Some(output_str.to_owned())
+    if output_str.trim().ends_with("%") {
+        Some(output_str.trim().to_owned())
     } else {
         None
     }

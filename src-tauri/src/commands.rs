@@ -52,16 +52,16 @@ pub async fn upscale_single_image(
         };
 
         let (mut rx, mut _child) =
-            // match Command::new(r#".\resources\realesrgan-ncnn-vulkan.exe"#)
-            match Command::new("./lib/upscale-rs/resources/linux/bin/realesrgan-ncnn-vulkan")
+            // match Command::new(r#".\resources\bin\windows\realesrgan-ncnn-vulkan.exe"#)
+            match Command::new("./lib/upscale-rs/resources/bin/linux/realesrgan-ncnn-vulkan")
                 .args([
                     "-i",
                     &path,
                     "-o",
                     &save_path,
                     "-m",
-                    // r#".\models"#,
-                    "./lib/upscale-rs/models",
+                    // r#".\resources\models"#,
+                    "./lib/upscale-rs/resources/models",
                     "-n",
                     upscale_type_model.upscale_type_as_str(),
                 ])

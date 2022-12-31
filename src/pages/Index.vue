@@ -32,8 +32,11 @@
         <span class="ml-2">{{ imagePath.path }}</span>
         <v-divider />
       </h5>
-      <v-progress-circular class="loading-gif" color="#ff7a00" indeterminate :size="128" :width="12"
-        v-if="isProcessing && !isMultipleFiles" />
+      <div v-if="isProcessing && !isMultipleFiles">
+        <span class="loading-percentage-text">{{ progressPercentage }}</span>
+        <v-progress-circular class="loading-gif" color="#ff7a00" indeterminate :size="128" :width="12"
+           />
+      </div>
       <div class="file-drop-area mt-8" v-if="!imageBlob && !imagePaths.length" @click="openImage">
         Click to select images or drop them here
       </div>
@@ -69,6 +72,7 @@ const upscaleFactor: Ref<UpscaleFactor> = ref("4");
 const upscaleType: Ref<UpscaleType> = ref("general");
 const isMultipleFiles = ref(false);
 const showMultipleFilesProcessingIcon = ref(false);
+const progressPercentage = ref("0.00%");
 
 // Computes if the user is ready to upscale the image. Used the simplify the DOM code.
 const isReadyToUpscale = computed(() => {
@@ -78,8 +82,8 @@ const isReadyToUpscale = computed(() => {
   );
 });
 
-appWindow.listen("percentage", ({ event, payload }) => { 
-  console.log(payload)
+appWindow.listen("upscale-percentage", ({ event, payload } ) => {
+  progressPercentage.value = payload as string;
 });
 
 /**
@@ -245,6 +249,7 @@ async function openImage() {
  * It is used to control the code flow.
  */
 function startProcessing() {
+  progressPercentage.value = "0.00%";
   if (isMultipleFiles.value) {
     upscaleMultipleImages();
   } else {
@@ -347,9 +352,17 @@ async function upscaleSingleImage() {
 <style scoped lang="scss">
 .loading-gif {
   z-index: 1;
-  margin-left: -70px;
-  margin-top: 190px;
-  position: fixed;
+  left: 535px;
+  top: 235px;
+  position: absolute;
+}
+
+.loading-percentage-text {
+  z-index: 2;
+  font-size: 28px;
+  top: 290px;
+  left: 560px;
+  position: absolute;
 }
 
 .image-area {

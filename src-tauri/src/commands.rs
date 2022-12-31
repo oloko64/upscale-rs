@@ -83,9 +83,11 @@ pub async fn upscale_single_image(
             match event {
                 CommandEvent::Stderr(data) | CommandEvent::Stdout(data) => {
                     write!(&mut command_buffer, "{data}").expect("Failed to write to buffer");
-                    window
-                        .emit("percentage", &data)
-                        .expect("Failed to emit log event");
+                    if let Some(output_string) = utils::filter_percentage_output(&data) {
+                        window
+                            .emit("upscale-percentage", &output_string)
+                            .expect("Failed to emit log event");
+                    }
                     println!("{data}");
                 }
                 CommandEvent::Terminated(process) => {

@@ -83,6 +83,15 @@ pub fn read_image_base64(path: &str, max_mb_size: Option<u8>) -> Result<String, 
     Ok(base64::encode(buffer))
 }
 
+/// Returns the given string if it ends with a percentage sign.
+pub fn filter_percentage_output(output_str: &str) -> Option<String> {
+    if output_str.trim().ends_with("%") {
+        Some(output_str.trim().to_owned())
+    } else {
+        None
+    }
+}
+
 /// Replaces the suffix of the given path with `_upscaled-4x.<extension>`
 #[tauri::command]
 pub fn replace_file_suffix(path: &str) -> String {

@@ -8,9 +8,20 @@ A GUI image upscaler making use of [Tauri](https://tauri.app/) and [Vue3](https:
 
 Using the [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) model under the hood. **It requires a GPU to run**.
 
+# Features
+
+- 4x upscale of images with 2 configurations general photo and anime.
+- Single and multiple images upscale.
+- Real time percentage progress.
+- Inside app image previewer.
+- Drag and drop of images for easy of use.
+- No internet needed, can be used offline.
+- Build in logging for better debugging (optional and off by default).
+- Light and Dark modes, based on your app configurtation (Windows only feature, Linux uses Dark mode).
+
 # Interface
 
-![upscale-rs-interface-beta3](https://user-images.githubusercontent.com/49915167/205464600-4b899a1d-3775-4757-92ef-20bd947c69d4.png)
+![image](https://user-images.githubusercontent.com/49915167/210158032-295562a4-aa23-43f3-b396-db157f748c40.png)
 
 # Upscaling Sample
 

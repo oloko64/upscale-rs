@@ -1,6 +1,6 @@
 [package]
 name = "upscale-rs"
-version = "0.1.9"
+version = "0.2.0"
 description = "A Tauri based GUI app that upscale images using Real-ESRGAN model."
 authors = ["OLoKo64 <reinaldorozatoj.11cg1@aleeas.com>"]
 license = "MIT"

@@ -28,12 +28,16 @@
       <h5 class="mb-2 path-text" :key="imagePath.path" v-for="imagePath in imagePaths">
         <v-progress-circular v-if="!imagePath.isReady" v-show="showMultipleFilesProcessingIcon" indeterminate
           color="#ff7a00" size="16" />
-        <v-icon v-else size="16" :icon="mdiImageCheck" v-show="showMultipleFilesProcessingIcon" />
+        <span v-if="!imagePath.isReady" v-show="showMultipleFilesProcessingIcon"> - {{ imagePath.progressPercentageMulti
+}} |</span>
+        <v-icon v-if="imagePath.isReady" size="16" :icon="mdiImageCheck" v-show="showMultipleFilesProcessingIcon" />
         <span class="ml-2">{{ imagePath.path }}</span>
         <v-divider />
       </h5>
-      <v-progress-circular class="loading-gif" color="#ff7a00" indeterminate :size="128" :width="12"
-        v-if="isProcessing && !isMultipleFiles" />
+      <div v-if="isProcessing && !isMultipleFiles">
+        <span class="loading-percentage-text">{{ progressPercentage }}</span>
+        <v-progress-circular class="loading-gif" color="#ff7a00" indeterminate :size="128" :width="12" />
+      </div>
       <div class="file-drop-area mt-8" v-if="!imageBlob && !imagePaths.length" @click="openImage">
         Click to select images or drop them here
       </div>
@@ -51,11 +55,13 @@ import { mdiFileImage, mdiImageCheck, mdiMenu } from "@mdi/js";
 import { invoke } from "@tauri-apps/api/tauri";
 import { loadImage } from "@/helpers/loadImageBase64";
 import { sendTauriNotification } from "@/helpers/tauriNotification";
-import { listen } from "@tauri-apps/api/event";
 import { open, save } from "@tauri-apps/api/dialog";
 import { WebviewWindow } from "@tauri-apps/api/window";
 import { Configuration } from "@/types/configuration";
 import { ImagePathsDisplay } from "@/types/images";
+import { appWindow } from "@tauri-apps/api/window";
+
+const DEFAULT_PERCENTAGE = "0.00%";
 
 type UpscaleType = "general" | "digital";
 type UpscaleFactor = "2" | "3" | "4";
@@ -69,6 +75,8 @@ const upscaleFactor: Ref<UpscaleFactor> = ref("4");
 const upscaleType: Ref<UpscaleType> = ref("general");
 const isMultipleFiles = ref(false);
 const showMultipleFilesProcessingIcon = ref(false);
+const progressPercentage = ref(DEFAULT_PERCENTAGE);
+
 
 // Computes if the user is ready to upscale the image. Used the simplify the DOM code.
 const isReadyToUpscale = computed(() => {
@@ -78,11 +86,15 @@ const isReadyToUpscale = computed(() => {
   );
 });
 
+appWindow.listen("UPSCALE-PERCENTAGE", ({ event, payload }: { event: any, payload: string }) => {
+  progressPercentage.value = payload;
+});
+
 /**
  * Listens for file drops on the window and decides if is a single or multiple file upload.
  */
-listen("tauri://file-drop", async (event) => {
-  const files = event.payload as string[];
+appWindow.listen("tauri://file-drop", async ({ event, payload }: { event: any, payload: string[] }) => {
+  const files = payload;
   if (!files.length || isProcessing.value) {
     return;
   }
@@ -95,6 +107,7 @@ listen("tauri://file-drop", async (event) => {
         return {
           path: file,
           isReady: false,
+          progressPercentageMulti: ref(DEFAULT_PERCENTAGE),
         };
       })
       .filter((file) => {
@@ -218,6 +231,7 @@ async function openImage() {
       return {
         path,
         isReady: false,
+        progressPercentageMulti: ref(DEFAULT_PERCENTAGE),
       };
     });
   } else if (selected === null) {
@@ -241,6 +255,7 @@ async function openImage() {
  * It is used to control the code flow.
  */
 function startProcessing() {
+  progressPercentage.value = DEFAULT_PERCENTAGE;
   if (isMultipleFiles.value) {
     upscaleMultipleImages();
   } else {
@@ -271,6 +286,9 @@ async function upscaleMultipleImages() {
       });
 
       outputFile = `${outputFolder}/${outputFile.split("/").pop()}`;
+
+      // Copy the progress percentage by reference for the current processing image
+      imagePaths.value[i].progressPercentageMulti = progressPercentage;
       await invoke("upscale_single_image", {
         path: imagePaths.value[i].path,
         savePath: outputFile,
@@ -278,11 +296,12 @@ async function upscaleMultipleImages() {
         upscaleType: upscaleType.value,
       });
       imagePaths.value[i].isReady = true;
-      sendTauriNotification(
-        "Upscale-rs",
-        "All images have been upscaled successfully!"
-      );
+      progressPercentage.value = DEFAULT_PERCENTAGE;
     }
+    sendTauriNotification(
+      "Upscale-rs",
+      "All images have been successfully upscaled!"
+    );
   } catch (err: any) {
     showMultipleFilesProcessingIcon.value = false;
     await invoke("write_log", { message: err.toString() });
@@ -313,13 +332,13 @@ async function upscaleSingleImage() {
   }
   isProcessing.value = true;
   try {
-    const output = await invoke("upscale_single_image", {
+    await invoke("upscale_single_image", {
       path: imagePath.value,
       savePath: imageSavePath,
       upscaleFactor: upscaleFactor.value,
       upscaleType: upscaleType.value,
     });
-    sendTauriNotification("Upscale-rs", "The image was upscaled successfully!");
+    sendTauriNotification("Upscale-rs", "The image was successfully upscaled!");
 
     // Load the upscaled image into the image previewer
     try {
@@ -343,9 +362,20 @@ async function upscaleSingleImage() {
 <style scoped lang="scss">
 .loading-gif {
   z-index: 1;
-  margin-left: -70px;
-  margin-top: 190px;
-  position: fixed;
+  left: 535px;
+  top: 235px;
+  position: absolute;
+}
+
+.loading-percentage-text {
+  background-color: rgba($color: #000000, $alpha: 0.5);
+  border-radius: 12px;
+  padding: 8px 4px 1px 4px;
+  z-index: 1;
+  font-size: 28px;
+  top: 282px;
+  left: 546px;
+  position: absolute;
 }
 
 .image-area {

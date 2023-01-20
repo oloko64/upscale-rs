@@ -12,11 +12,11 @@ env:
 jobs:
   test:
 
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
     - name: Create required dist folder
       run: mkdir dist
     - name: Run tests
-      run: cd src-tauri && cargo test
+      run: cd src-tauri && cargo test --verbose

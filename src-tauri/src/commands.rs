@@ -1,11 +1,12 @@
-use std::io::{self, Write};
-
+use crate::utils;
+use std::{
+    env,
+    io::{self, Write},
+};
 use tauri::{
     api::process::{Command, CommandEvent},
     Window,
 };
-
-use crate::utils;
 
 enum UpscaleTypes {
     General,
@@ -40,10 +41,31 @@ pub async fn upscale_single_image(
         "Upscaling image: {} with the following configuration:
         -> Save path: {}
         -> Upscale factor: {} ### NOT WORKING ATM ###
-        -> Upscale type: {}\n",
-        &path, &save_path, &upscale_factor, &upscale_type
+        -> Upscale type: {}
+        -> Operating System: {}\n",
+        &path,
+        &save_path,
+        &upscale_factor,
+        &upscale_type,
+        env::consts::OS
     );
     println!("{}", &upscale_information);
+
+    let command = match env::consts::OS {
+        "windows" => r#".\resources\bin\windows\realesrgan-ncnn-vulkan.exe"#,
+        "linux" => "./lib/upscale-rs/resources/bin/linux/realesrgan-ncnn-vulkan",
+        _ => {
+            panic!("Unsupported operating system, currently only Windows and Linux are supported.")
+        }
+    };
+
+    let models_folder = match env::consts::OS {
+        "windows" => r#".\resources\models"#,
+        "linux" => "./lib/upscale-rs/resources/models",
+        _ => {
+            panic!("Unsupported operating system, currently only Windows and Linux are supported.")
+        }
+    };
 
     let command = tauri::async_runtime::spawn(async move {
         let upscale_type_model = match upscale_type.as_str() {
@@ -51,29 +73,26 @@ pub async fn upscale_single_image(
             _ => UpscaleTypes::General,
         };
 
-        let (mut rx, mut _child) =
-            // match Command::new(r#".\resources\bin\windows\realesrgan-ncnn-vulkan.exe"#)
-            match Command::new("./lib/upscale-rs/resources/bin/linux/realesrgan-ncnn-vulkan")
-                .args([
-                    "-i",
-                    &path,
-                    "-o",
-                    &save_path,
-                    "-m",
-                    // r#".\resources\models"#,
-                    "./lib/upscale-rs/resources/models",
-                    "-n",
-                    upscale_type_model.upscale_type_as_str(),
-                ])
-                .spawn()
-            {
-                Ok((rx, child)) => (rx, child),
-                Err(err) => {
-                    return Err(format!(
-                        "Failed to spawn process \"realesrgan-ncnn-vulkan\": {err}",
-                    ));
-                }
-            };
+        let (mut rx, mut _child) = match Command::new(command)
+            .args([
+                "-i",
+                &path,
+                "-o",
+                &save_path,
+                "-m",
+                models_folder,
+                "-n",
+                upscale_type_model.upscale_type_as_str(),
+            ])
+            .spawn()
+        {
+            Ok((rx, child)) => (rx, child),
+            Err(err) => {
+                return Err(format!(
+                    "Failed to spawn process \"realesrgan-ncnn-vulkan\": {err}",
+                ));
+            }
+        };
 
         let logger = utils::Logger::new();
         let mut command_buffer = Vec::new();

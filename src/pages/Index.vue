@@ -36,7 +36,7 @@
         @click="startProcessing"
       >
         {{
-          isMultipleFiles ? "Upscale Selected Images" : "Upscale Selected Image"
+          isMultipleFiles? "Upscale Selected Images": "Upscale Selected Image"
         }}
       </v-btn>
       <v-btn
@@ -83,7 +83,8 @@
         <span
           v-if="!imagePath.isReady"
           v-show="showMultipleFilesProcessingIcon"
-        > - {{ imagePath.progressPercentageMulti
+        > - {{
+          imagePath.progressPercentageMulti
         }} |</span>
         <v-icon
           v-if="imagePath.isReady"

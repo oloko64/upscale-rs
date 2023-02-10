@@ -1,8 +1,5 @@
-use crate::utils;
-use std::{
-    env,
-    io::{self, Write},
-};
+use crate::{generate_command_parameters, generate_upscale_run_information, utils};
+use std::io::{self, Write};
 use tauri::{
     api::process::{Command, CommandEvent},
     Window,
@@ -37,35 +34,10 @@ pub async fn upscale_single_image(
     upscale_type: String,
     window: Window,
 ) -> Result<String, String> {
-    let upscale_information = format!(
-        "Upscaling image: {} with the following configuration:
-        -> Save path: {}
-        -> Upscale factor: {} ### NOT WORKING ATM ###
-        -> Upscale type: {}
-        -> Operating System: {}\n",
-        &path,
-        &save_path,
-        &upscale_factor,
-        &upscale_type,
-        env::consts::OS
-    );
-    println!("{}", &upscale_information);
+    let upscale_information =
+        generate_upscale_run_information!(&path, &save_path, &upscale_factor, &upscale_type);
 
-    let command = match env::consts::OS {
-        "windows" => r#".\resources\bin\windows\realesrgan-ncnn-vulkan.exe"#,
-        "linux" => "./lib/upscale-rs/resources/bin/linux/realesrgan-ncnn-vulkan",
-        _ => {
-            panic!("Unsupported operating system, currently only Windows and Linux are supported.")
-        }
-    };
-
-    let models_folder = match env::consts::OS {
-        "windows" => r#".\resources\models"#,
-        "linux" => "./lib/upscale-rs/resources/models",
-        _ => {
-            panic!("Unsupported operating system, currently only Windows and Linux are supported.")
-        }
-    };
+    let (command_str, models_folder) = generate_command_parameters!();
 
     let command = tauri::async_runtime::spawn(async move {
         let upscale_type_model = match upscale_type.as_str() {
@@ -73,7 +45,7 @@ pub async fn upscale_single_image(
             _ => UpscaleTypes::General,
         };
 
-        let (mut rx, mut _child) = match Command::new(command)
+        let (mut rx, mut _child) = match Command::new(command_str)
             .args([
                 "-i",
                 &path,

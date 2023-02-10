@@ -5,6 +5,7 @@
 
 mod commands;
 mod configuration;
+mod macros;
 mod utils;
 
 fn main() {

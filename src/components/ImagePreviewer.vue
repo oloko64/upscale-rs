@@ -1,15 +1,30 @@
 <template>
-    <div>
-        <viewer :images="images" />
-        <div :class="{ 'preview-area': !isProcessing }" @click="showImagePreviewer">
-            <v-img :class="{ 'image-src-on-hover': !isProcessing }" class="image-src" :src="imageSrc" width="500"
-                height="500" aspect-ratio="1" cover>
-                <div class="preview-text-back px-3 py-2" v-if="!isProcessing">
-                    <p class="ma-0">Click to preview</p>
-                </div>
-            </v-img>
+  <div>
+    <viewer :images="images" />
+    <div
+      :class="{ 'preview-area': !isProcessing }"
+      @click="showImagePreviewer"
+    >
+      <v-img
+        :class="{ 'image-src-on-hover': !isProcessing }"
+        class="image-src"
+        :src="imageSrc"
+        width="500"
+        height="500"
+        aspect-ratio="1"
+        cover
+      >
+        <div
+          v-if="!isProcessing"
+          class="preview-text-back px-3 py-2"
+        >
+          <p class="ma-0">
+            Click to preview
+          </p>
         </div>
+      </v-img>
     </div>
+  </div>
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'

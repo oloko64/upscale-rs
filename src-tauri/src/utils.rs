@@ -5,6 +5,7 @@ use std::{
 };
 
 use crate::configuration::{self, ConfigData, CONFIG_FOLDER, LOG_FILE};
+use base64::{engine::general_purpose, Engine as _};
 
 pub struct Logger {
     path: PathBuf,
@@ -44,9 +45,7 @@ impl Logger {
             .expect("Failed to open log file");
         file.write_all(
             format!(
-                "{}\n###################################################################\n",
-                message
-            )
+                "{message}\n###################################################################\n")
             .as_bytes(),
         )
         .expect("Failed to write to log file");
@@ -68,11 +67,9 @@ pub fn read_image_base64(path: &str, max_mb_size: Option<u8>) -> Result<String, 
         Ok(_) => {
             if let Some(max_mb_size) = max_mb_size {
                 // 1 MB = 1048576 bytes
-                if buffer.len() > ((max_mb_size as usize) * 1048576) {
+                if buffer.len() > ((max_mb_size as usize) * 1_048_576) {
                     return Err(format!(
-                        "File is too large. Maximum size is set at {} MB.",
-                        max_mb_size
-                    ));
+                        "File is too large. Maximum size is set at {max_mb_size} MB."));
                 }
             }
         }
@@ -80,12 +77,12 @@ pub fn read_image_base64(path: &str, max_mb_size: Option<u8>) -> Result<String, 
             return Err(format!("Failed while reading file: {err}"));
         }
     };
-    Ok(base64::encode(buffer))
+    Ok(general_purpose::STANDARD.encode(&buffer))
 }
 
 /// Returns the given string if it ends with a percentage sign.
 pub fn filter_percentage_output(output_str: &str) -> Option<String> {
-    if output_str.trim().ends_with("%") {
+    if output_str.trim().ends_with('%') {
         Some(output_str.trim().to_owned())
     } else {
         None

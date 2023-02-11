@@ -1,8 +1,14 @@
 <template>
   <div class="pa-8">
     <div class="text-center">
-      <img class="mb-3" :src="HorizontalLogo" width="350" />
-      <p class="mb-5">A Tauri based GUI app that upscale images using Real-ESRGAN model.</p>
+      <img
+        class="mb-3"
+        :src="HorizontalLogo"
+        width="350"
+      >
+      <p class="mb-5">
+        A Tauri based GUI app that upscale images using Real-ESRGAN model.
+      </p>
       <v-divider class="mb-5" />
       <div class="text-left">
         <p><strong>Version: </strong>v{{ appVersion }}</p>

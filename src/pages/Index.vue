@@ -1,47 +1,122 @@
 <template>
   <div class="outer-box">
     <div class="options-column">
-      <img class="mb-3 about-logo-redirect" :src="HorizontalLogo" width="200" @click="openAboutPage" />
-      <v-btn class="mt-6" size="large" rounded="lg" :prepend-icon="mdiFileImage" :disabled="isProcessing" elevation="0"
-        @click="openImage">
+      <img
+        class="mb-3 about-logo-redirect"
+        :src="HorizontalLogo"
+        width="200"
+        @click="openAboutPage"
+      >
+      <v-btn
+        class="mt-6"
+        size="large"
+        rounded="lg"
+        :prepend-icon="mdiFileImage"
+        :disabled="isProcessing"
+        elevation="0"
+        @click="openImage"
+      >
         Select Images
       </v-btn>
-      <UpscaleTypeOption :disabled="isProcessing" class="mt-2 mb-5" @upscale-type-changed="setUpscaleType" />
+      <UpscaleTypeOption
+        :disabled="isProcessing"
+        class="mt-2 mb-5"
+        @upscale-type-changed="setUpscaleType"
+      />
       <v-divider class="mb-10 mt-5" />
       <!-- Scale factor seems not to be working -->
       <!-- <UpscaleFactorOptions @upscale-factor-changed="updateUpscaleFactor" /> -->
-      <v-btn size="large" rounded="lg" class="mb-2" :disabled="isReadyToUpscale" elevation="0" width="310"
-        @click="startProcessing">
+      <v-btn
+        size="large"
+        rounded="lg"
+        class="mb-2"
+        :disabled="isReadyToUpscale"
+        elevation="0"
+        width="310"
+        @click="startProcessing"
+      >
         {{
-    isMultipleFiles ? "Upscale Selected Images" : "Upscale Selected Image"
-}}
+          isMultipleFiles? "Upscale Selected Images": "Upscale Selected Image"
+        }}
       </v-btn>
-      <v-btn size="large" rounded="lg" :disabled="isProcessing" elevation="0" @click="clearSelectedImage">
+      <v-btn
+        size="large"
+        rounded="lg"
+        :disabled="isProcessing"
+        elevation="0"
+        @click="clearSelectedImage"
+      >
         Clear
       </v-btn>
       <div class="d-flex">
-        <v-btn elevation="0" class="config-button" size="32" :icon="mdiMenu" @click="openConfig"></v-btn>
+        <v-btn
+          elevation="0"
+          class="config-button"
+          size="32"
+          :icon="mdiMenu"
+          @click="openConfig"
+        />
       </div>
     </div>
-    <div class="image-area mt-5" :class="{ 'text-center': !isMultipleFiles }">
-      <h5 class="mb-2 path-text" v-if="imagePath">{{ imagePath }}</h5>
-      <h5 class="mb-2 path-text" :key="imagePath.path" v-for="imagePath in imagePaths">
-        <v-progress-circular v-if="!imagePath.isReady" v-show="showMultipleFilesProcessingIcon" indeterminate
-          color="#ff7a00" size="16" />
-        <span v-if="!imagePath.isReady" v-show="showMultipleFilesProcessingIcon"> - {{ imagePath.progressPercentageMulti
-}} |</span>
-        <v-icon v-if="imagePath.isReady" size="16" :icon="mdiImageCheck" v-show="showMultipleFilesProcessingIcon" />
+    <div
+      class="image-area mt-5"
+      :class="{ 'text-center': !isMultipleFiles }"
+    >
+      <h5
+        v-if="imagePath"
+        class="mb-2 path-text"
+      >
+        {{ imagePath }}
+      </h5>
+      <h5
+        v-for="imagePath in imagePaths"
+        :key="imagePath.path"
+        class="mb-2 path-text"
+      >
+        <v-progress-circular
+          v-if="!imagePath.isReady"
+          v-show="showMultipleFilesProcessingIcon"
+          indeterminate
+          color="#ff7a00"
+          size="16"
+        />
+        <span
+          v-if="!imagePath.isReady"
+          v-show="showMultipleFilesProcessingIcon"
+        > - {{
+          imagePath.progressPercentageMulti
+        }} |</span>
+        <v-icon
+          v-if="imagePath.isReady"
+          v-show="showMultipleFilesProcessingIcon"
+          size="16"
+          :icon="mdiImageCheck"
+        />
         <span class="ml-2">{{ imagePath.path }}</span>
         <v-divider />
       </h5>
       <div v-if="isProcessing && !isMultipleFiles">
         <span class="loading-percentage-text">{{ progressPercentage }}</span>
-        <v-progress-circular class="loading-gif" color="#ff7a00" indeterminate :size="128" :width="12" />
+        <v-progress-circular
+          class="loading-gif"
+          color="#ff7a00"
+          indeterminate
+          :size="128"
+          :width="12"
+        />
       </div>
-      <div class="file-drop-area mt-8" v-if="!imageBlob && !imagePaths.length" @click="openImage">
+      <div
+        v-if="!imageBlob && !imagePaths.length"
+        class="file-drop-area mt-8"
+        @click="openImage"
+      >
         Click to select images or drop them here
       </div>
-      <ImagePreviewer :images="[upscaledImageBlob, imageBlob]" :is-processing="isProcessing" v-if="imageBlob" />
+      <ImagePreviewer
+        v-if="imageBlob"
+        :images="[upscaledImageBlob, imageBlob]"
+        :is-processing="isProcessing"
+      />
     </div>
   </div>
 </template>

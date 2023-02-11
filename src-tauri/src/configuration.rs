@@ -18,16 +18,17 @@ pub struct ConfigData {
     max_preview_upscale_size: u8,
 }
 
-impl ConfigData {
-    /// Returns a default configuration.
-    pub fn default() -> ConfigData {
+impl Default for ConfigData {
+    fn default() -> ConfigData {
         Self {
             application_logs: false,
             default_upscale_type: String::from("general"),
             max_preview_upscale_size: 15,
         }
     }
+}
 
+impl ConfigData {
     /// Validates the `ConfigData` struct.
     fn validate_config(&self) -> Result<(), Box<dyn Error>> {
         if [String::from("general"), String::from("digital")]

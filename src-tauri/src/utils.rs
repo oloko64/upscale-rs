@@ -193,4 +193,19 @@ mod tests {
             "/home/user two/image with spaces_upscaled-4x.png"
         );
     }
+
+    #[test]
+    fn test_filter_percentage_output() {
+        assert_eq!(filter_percentage_output("100%"), Some("100%".to_owned()));
+        assert_eq!(filter_percentage_output(" 100%"), Some("100%".to_owned()));
+        assert_eq!(filter_percentage_output("100% "), Some("100%".to_owned()));
+        assert_eq!(filter_percentage_output(" 100% "), Some("100%".to_owned()));
+        assert_eq!(filter_percentage_output("100 %"), Some("100 %".to_owned()));
+        assert_eq!(filter_percentage_output("100% "), Some("100%".to_owned()));
+        assert_eq!(filter_percentage_output("100 %"), Some("100 %".to_owned()));
+        assert_eq!(filter_percentage_output(" 100% "), Some("100%".to_owned()));
+        assert_eq!(filter_percentage_output("10%0"), None);
+        assert_eq!(filter_percentage_output("%100"), None);
+        assert_eq!(filter_percentage_output("100"), None);
+    }
 }

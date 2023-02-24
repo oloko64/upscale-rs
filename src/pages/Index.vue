@@ -20,10 +20,15 @@
       </v-btn>
       <UpscaleTypeOption
         :disabled="isProcessing"
-        class="mt-2 mb-5"
+        class="mt-2 mb-2"
         @upscale-type-changed="setUpscaleType"
       />
-      <v-divider class="mb-10 mt-5" />
+      <AdvancedOptions
+        :disabled="isProcessing"
+        class="mt-3"
+        @advanced-options="updateAdvancedOptions"
+      />
+      <v-divider class="mb-6 mt-3" />
       <!-- Scale factor seems not to be working -->
       <!-- <UpscaleFactorOptions @upscale-factor-changed="updateUpscaleFactor" /> -->
       <v-btn
@@ -48,15 +53,10 @@
       >
         Clear
       </v-btn>
-      <AdvancedOptions
-        class="mt-3"
-        @advanced-options="updateAdvancedOptions"
-      />
-      <span>{{ advancedOptions }}</span>
       <div class="d-flex">
         <v-btn
           elevation="0"
-          class="mt-3"
+          class="config-options-button"
           size="32"
           :icon="mdiMenu"
           @click="openConfig"
@@ -483,6 +483,12 @@ async function upscaleSingleImage() {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.config-options-button {
+  position: fixed;
+  top: 525px;
+  left: 15px;
 }
 
 .file-drop-area {

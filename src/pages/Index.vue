@@ -202,7 +202,8 @@ appWindow.listen("tauri://file-drop", async ({ event, payload }: { event: any, p
         return (
           file.path.endsWith(".png") ||
           file.path.endsWith(".jpg") ||
-          file.path.endsWith(".jpeg")
+          file.path.endsWith(".jpeg") ||
+          file.path.endsWith(".webp")
         );
       });
   } else {
@@ -212,7 +213,8 @@ appWindow.listen("tauri://file-drop", async ({ event, payload }: { event: any, p
       !(
         image.endsWith(".png") ||
         image.endsWith(".jpg") ||
-        image.endsWith(".jpeg")
+        image.endsWith(".jpeg") ||
+        image.endsWith(".webp")
       )
     ) {
       alert("Please select a valid image file.");

@@ -100,6 +100,8 @@ pub fn replace_file_suffix(path: &str) -> String {
         jpg.to_owned() + "_upscaled-4x.jpg"
     } else if let Some(jpeg) = path.strip_suffix(".jpeg") {
         jpeg.to_owned() + "_upscaled-4x.jpeg"
+    } else if let Some(webp) = path.strip_suffix(".webp") {
+        webp.to_owned() + "_upscaled-4x.webp"
     } else {
         path.to_owned() + "_upscaled-4x.png"
     }
@@ -154,6 +156,10 @@ mod tests {
             replace_file_suffix("/home/user/image.jpeg"),
             "/home/user/image_upscaled-4x.jpeg"
         );
+        assert_eq!(
+            replace_file_suffix("/home/user/image.webp"),
+            "/home/user/image_upscaled-4x.webp"
+        );
     }
 
     #[test]
@@ -169,6 +175,10 @@ mod tests {
         assert_eq!(
             replace_file_suffix(r#"C:\Users\user\image.jpeg"#),
             r#"C:\Users\user\image_upscaled-4x.jpeg"#
+        );
+        assert_eq!(
+            replace_file_suffix(r#"C:\Users\user\image.webp"#),
+            r#"C:\Users\user\image_upscaled-4x.webp"#
         );
     }
 

@@ -1,5 +1,5 @@
 use crate::{generate_command_parameters, generate_upscale_run_information, utils};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::{
     collections::HashMap,
     io::{self, Write},
@@ -9,10 +9,15 @@ use tauri::{
     Window,
 };
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct AdvancedOptions {
+    #[serde(rename = "gpu-id")]
     pub gpu_id: Option<String>,
+
+    #[serde(rename = "tile-size")]
     pub tile_size: Option<String>,
+
+    #[serde(rename = "load-proc-save")]
     pub load_proc_save: Option<String>,
 }
 

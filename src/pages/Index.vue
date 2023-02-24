@@ -160,9 +160,9 @@ const showMultipleFilesProcessingIcon = ref(false);
 const progressPercentage = ref(DEFAULT_PERCENTAGE);
 
 const advancedOptions = ref({
-    gpu_id: "",
-    tile_size: "",
-    load_proc_save: "",
+    ["gpu-id"]: "",
+    ["tile-size"]: "",
+    ["load-proc-save"]: "",
 } as AdvancedOptionsType);
 
 

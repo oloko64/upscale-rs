@@ -1,5 +1,5 @@
 export interface AdvancedOptionsType {
-    gpu_id: string;
-    tile_size: string;
-    load_proc_save: string;
+    ["gpu-id"]: string;
+    ["tile-size"]: string;
+    ["load-proc-save"]: string;
 }

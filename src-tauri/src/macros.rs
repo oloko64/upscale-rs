@@ -1,17 +1,19 @@
 #[macro_export]
 macro_rules! generate_upscale_run_information {
-    ($path:expr, $save_path:expr, $upscale_factor:expr, $upscale_type:expr) => {{
+    ($path:expr, $save_path:expr, $upscale_factor:expr, $upscale_type:expr, $advanced_options:expr) => {{
         let upscale_information = format!(
             "Upscaling image: {} with the following configuration:
             -> Save path: {}
             -> Upscale factor: {} ### NOT WORKING ATM ###
             -> Upscale type: {}
-            -> Operating System: {}\n",
+            -> Operating System: {}
+            -> Advanced options: {:?}\n",
             $path,
             $save_path,
             $upscale_factor,
             $upscale_type,
-            std::env::consts::OS
+            std::env::consts::OS,
+            $advanced_options
         );
         println!("{}", &upscale_information);
 
@@ -52,7 +54,8 @@ mod tests {
             "test_path",
             "test_save_path",
             "test_upscale_factor",
-            "test_upscale_type"
+            "test_upscale_type",
+            "test_advanced_options"
         );
 
         assert_eq!(
@@ -62,7 +65,8 @@ mod tests {
             -> Save path: test_save_path
             -> Upscale factor: test_upscale_factor ### NOT WORKING ATM ###
             -> Upscale type: test_upscale_type
-            -> Operating System: {}\n",
+            -> Operating System: {}
+            -> Advanced options: \"test_advanced_options\"\n",
                 std::env::consts::OS
             )
         );

@@ -45,7 +45,8 @@ impl Logger {
             .expect("Failed to open log file");
         file.write_all(
             format!(
-                "{message}\n###################################################################\n")
+                "{message}\n###################################################################\n"
+            )
             .as_bytes(),
         )
         .expect("Failed to write to log file");
@@ -69,7 +70,8 @@ pub fn read_image_base64(path: &str, max_mb_size: Option<u8>) -> Result<String, 
                 // 1 MB = 1048576 bytes
                 if buffer.len() > ((max_mb_size as usize) * 1_048_576) {
                     return Err(format!(
-                        "File is too large. Maximum size is set at {max_mb_size} MB."));
+                        "File is too large. Maximum size is set at {max_mb_size} MB."
+                    ));
                 }
             }
         }

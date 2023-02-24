@@ -1,9 +1,20 @@
 use crate::{generate_command_parameters, generate_upscale_run_information, utils};
-use std::io::{self, Write};
+use serde::Deserialize;
+use std::{
+    collections::HashMap,
+    io::{self, Write},
+};
 use tauri::{
     api::process::{Command, CommandEvent},
     Window,
 };
+
+#[derive(Deserialize, Debug)]
+pub struct AdvancedOptions {
+    pub gpu_id: Option<String>,
+    pub tile_size: Option<String>,
+    pub load_proc_save: Option<String>,
+}
 
 enum UpscaleTypes {
     General,
@@ -32,32 +43,57 @@ pub async fn upscale_single_image(
     save_path: String,
     upscale_factor: String,
     upscale_type: String,
+    advanced_options: AdvancedOptions,
     window: Window,
 ) -> Result<String, String> {
-    let upscale_information =
-        generate_upscale_run_information!(&path, &save_path, &upscale_factor, &upscale_type);
+    let upscale_information = generate_upscale_run_information!(
+        &path,
+        &save_path,
+        &upscale_factor,
+        &upscale_type,
+        &advanced_options
+    );
 
     let (command_str, models_folder) = generate_command_parameters!();
+    let upscale_type_model = match upscale_type.as_str() {
+        "digital" => UpscaleTypes::Digital,
+        _ => UpscaleTypes::General,
+    };
 
     let command = tauri::async_runtime::spawn(async move {
-        let upscale_type_model = match upscale_type.as_str() {
-            "digital" => UpscaleTypes::Digital,
-            _ => UpscaleTypes::General,
-        };
+        let advanced_options_map = [
+            ("-g", advanced_options.gpu_id.as_deref()),
+            ("-t", advanced_options.tile_size.as_deref()),
+            ("-j", advanced_options.load_proc_save.as_deref()),
+        ]
+        .into_iter()
+        .filter(|(_, value)| value.is_some() && !value.unwrap().is_empty())
+        .collect::<HashMap<&str, Option<&str>>>();
 
-        let (mut rx, mut _child) = match Command::new(command_str)
-            .args([
-                "-i",
-                &path,
-                "-o",
-                &save_path,
-                "-m",
-                models_folder,
-                "-n",
-                upscale_type_model.upscale_type_as_str(),
-            ])
-            .spawn()
-        {
+        let advanced_options_vec = advanced_options_map
+            .iter()
+            .filter_map(|(key, value)| value.map(|value| [*key, value]))
+            .flatten()
+            .collect::<Vec<&str>>();
+
+        let command_args = advanced_options_vec
+            .into_iter()
+            .chain(
+                [
+                    "-i",
+                    &path,
+                    "-o",
+                    &save_path,
+                    "-m",
+                    models_folder,
+                    "-n",
+                    upscale_type_model.upscale_type_as_str(),
+                ]
+                .into_iter(),
+            )
+            .collect::<Vec<_>>();
+
+        let (mut rx, mut _child) = match Command::new(command_str).args(command_args).spawn() {
             Ok((rx, child)) => (rx, child),
             Err(err) => {
                 return Err(format!(

@@ -48,10 +48,15 @@
       >
         Clear
       </v-btn>
+      <AdvancedOptions
+        class="mt-3"
+        @advanced-options="updateAdvancedOptions"
+      />
+      <span>{{ advancedOptions }}</span>
       <div class="d-flex">
         <v-btn
           elevation="0"
-          class="config-button"
+          class="mt-3"
           size="32"
           :icon="mdiMenu"
           @click="openConfig"
@@ -126,6 +131,8 @@ import { ref, Ref, computed } from "vue";
 import HorizontalLogo from "@/assets/upscale-rs-horizontal.png";
 import UpscaleTypeOption from "@/components/UpscaleTypeOption.vue";
 import ImagePreviewer from "@/components/ImagePreviewer.vue";
+import { AdvancedOptionsType } from "@/types/advancedOptions";
+import AdvancedOptions from "@/components/AdvancedOptions.vue";
 import { mdiFileImage, mdiImageCheck, mdiMenu } from "@mdi/js";
 import { invoke } from "@tauri-apps/api/tauri";
 import { loadImage } from "@/helpers/loadImageBase64";
@@ -151,6 +158,12 @@ const upscaleType: Ref<UpscaleType> = ref("general");
 const isMultipleFiles = ref(false);
 const showMultipleFilesProcessingIcon = ref(false);
 const progressPercentage = ref(DEFAULT_PERCENTAGE);
+
+const advancedOptions = ref({
+    gpu_id: "",
+    tile_size: "",
+    load_proc_save: "",
+} as AdvancedOptionsType);
 
 
 // Computes if the user is ready to upscale the image. Used the simplify the DOM code.
@@ -215,6 +228,10 @@ appWindow.listen("tauri://file-drop", async ({ event, payload }: { event: any, p
     }
   }
 });
+
+function updateAdvancedOptions(options: AdvancedOptionsType) {
+  advancedOptions.value = options;
+}
 
 function openAboutPage() {
   // https://tauri.app/v1/guides/features/multiwindow#create-a-window-in-javascript
@@ -369,6 +386,7 @@ async function upscaleMultipleImages() {
         savePath: outputFile,
         upscaleFactor: upscaleFactor.value,
         upscaleType: upscaleType.value,
+        advancedOptions: advancedOptions.value,
       });
       imagePaths.value[i].isReady = true;
       progressPercentage.value = DEFAULT_PERCENTAGE;
@@ -412,6 +430,7 @@ async function upscaleSingleImage() {
       savePath: imageSavePath,
       upscaleFactor: upscaleFactor.value,
       upscaleType: upscaleType.value,
+      advancedOptions: advancedOptions.value,
     });
     sendTauriNotification("Upscale-rs", "The image was successfully upscaled!");
 
@@ -491,10 +510,6 @@ async function upscaleSingleImage() {
   margin-bottom: 0px !important;
   height: 30px;
   cursor: pointer;
-}
-
-.config-button {
-  margin-top: 160px;
 }
 
 .options-column {

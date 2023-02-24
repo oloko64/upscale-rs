@@ -9,7 +9,7 @@
       >
         <v-card-title>
           <div class="d-flex justify-space-between">
-            Multi GPU options
+            Multi-GPU options
             <v-icon @click="openGpuDocumentation">
               {{ mdiTooltipQuestionOutline }}
             </v-icon>

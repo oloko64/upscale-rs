@@ -7,7 +7,7 @@
       inset
       class="ml-5"
       label="Save application logs"
-      @update:modelValue="write_configuration()"
+      @update:model-value="write_configuration()"
     />
     <v-divider class="ml-5 mr-5 mb-5 mt-2" />
     <v-select
@@ -20,7 +20,7 @@
       item-title="text"
       item-value="value"
       hide-details
-      @update:modelValue="write_configuration()"
+      @update:model-value="write_configuration()"
     />
     <v-divider class="ml-5 mr-5 mb-5 mt-6" />
     <div class="max-size-option">
@@ -36,7 +36,7 @@
         density="comfortable"
         :items="optionsPreviewMaxSize"
         hide-details
-        @update:modelValue="write_configuration()"
+        @update:model-value="write_configuration()"
       />
     </div>
   </div>

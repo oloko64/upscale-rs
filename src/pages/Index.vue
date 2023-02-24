@@ -69,30 +69,30 @@
         {{ imagePath }}
       </h5>
       <h5
-        v-for="imagePath in imagePaths"
-        :key="imagePath.path"
+        v-for="imgPath in imagePaths"
+        :key="imgPath.path"
         class="mb-2 path-text"
       >
         <v-progress-circular
-          v-if="!imagePath.isReady"
+          v-if="!imgPath.isReady"
           v-show="showMultipleFilesProcessingIcon"
           indeterminate
           color="#ff7a00"
           size="16"
         />
         <span
-          v-if="!imagePath.isReady"
+          v-if="!imgPath.isReady"
           v-show="showMultipleFilesProcessingIcon"
         > - {{
-          imagePath.progressPercentageMulti
+          imgPath.progressPercentageMulti
         }} |</span>
         <v-icon
-          v-if="imagePath.isReady"
+          v-if="imgPath.isReady"
           v-show="showMultipleFilesProcessingIcon"
           size="16"
           :icon="mdiImageCheck"
         />
-        <span class="ml-2">{{ imagePath.path }}</span>
+        <span class="ml-2">{{ imgPath.path }}</span>
         <v-divider />
       </h5>
       <div v-if="isProcessing && !isMultipleFiles">

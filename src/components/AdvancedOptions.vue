@@ -100,6 +100,7 @@
           class="mt-2"
           variant="outlined"
           height="30"
+          :disabled="defined_props.disabled"
           text
           @click="clearAdvancedOptions()"
         >

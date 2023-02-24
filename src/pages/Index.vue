@@ -58,6 +58,7 @@
           elevation="0"
           class="config-options-button"
           size="32"
+          :disabled="isProcessing"
           :icon="mdiMenu"
           @click="openConfig"
         />

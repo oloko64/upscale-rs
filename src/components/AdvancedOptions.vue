@@ -132,14 +132,13 @@ const rules = {
 }
 
 const dialog = ref(false);
+const configOptions = ref({} as Configuration);
 
 const isAdvancedOptionsEmpty = computed(() => {
     return !configOptions.value["advanced-options"]?.['gpu-id'] 
     && !configOptions.value["advanced-options"]?.["tile-size"] 
     && !configOptions.value["advanced-options"]?.["load-proc-save"];
 });
-
-const configOptions = ref({} as Configuration);
 
 onMounted(async () => {
   try {

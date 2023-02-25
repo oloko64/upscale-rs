@@ -188,6 +188,7 @@ appWindow.listen("tauri://file-drop", async ({ event, payload }: { event: any, p
     return;
   }
   clearSelectedImage();
+  const validExtensions = (path: string) => path.endsWith(".png") || path.endsWith(".jpg") || path.endsWith(".jpeg") || path.endsWith(".webp");
   if (files.length > 1) {
     showMultipleFilesProcessingIcon.value = false;
     isMultipleFiles.value = true;
@@ -199,25 +200,11 @@ appWindow.listen("tauri://file-drop", async ({ event, payload }: { event: any, p
           progressPercentageMulti: ref(DEFAULT_PERCENTAGE),
         };
       })
-      .filter((file) => {
-        return (
-          file.path.endsWith(".png") ||
-          file.path.endsWith(".jpg") ||
-          file.path.endsWith(".jpeg") ||
-          file.path.endsWith(".webp")
-        );
-      });
+      .filter((file) => validExtensions(file.path));
   } else {
     const image = files[0];
     isMultipleFiles.value = false;
-    if (
-      !(
-        image.endsWith(".png") ||
-        image.endsWith(".jpg") ||
-        image.endsWith(".jpeg") ||
-        image.endsWith(".webp")
-      )
-    ) {
+    if (!validExtensions(image)) {
       alert("Please select a valid image file.");
       return;
     }

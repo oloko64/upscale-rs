@@ -1,8 +1,6 @@
 use crate::{generate_command_parameters, generate_upscale_run_information, utils};
 use serde::{Deserialize, Serialize};
-use std::{
-    io::{self, Write},
-};
+use std::io::{self, Write};
 use tauri::{
     api::process::{Command, CommandEvent},
     Window,
@@ -71,7 +69,7 @@ pub async fn upscale_single_image(
             ("-j", advanced_options.load_proc_save.as_deref()),
         ]
         .into_iter()
-        .filter(|(_, value)| value.is_some() && !value.unwrap().trim().is_empty())
+        .filter(|(_, value)| value.is_some() && !value.unwrap_or_default().trim().is_empty())
         .map(|(key, value)| [key, value.unwrap()])
         .flatten()
         .collect::<Vec<&str>>();

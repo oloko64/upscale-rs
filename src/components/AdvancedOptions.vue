@@ -10,7 +10,7 @@
         <v-card-title>
           <div class="d-flex justify-space-between">
             Multi-GPU options
-            <v-icon @click="openGpuDocumentation">
+            <v-icon @click="openAdvancedOptionsDocPage">
               {{ mdiTooltipQuestionOutline }}
             </v-icon>
           </div>
@@ -37,7 +37,7 @@
           <v-text-field
             v-model.trim="configOptions['advanced-options']['load-proc-save']"
             maxlength="20"
-            label="load/proc/save" 
+            label="load:proc:save" 
             placeholder="thread count for load/proc/save (default=1:2:2) can be 1:2,2,2:2 for multi-gpu"
             density="compact"
             variant="outlined"
@@ -114,10 +114,10 @@
 <script setup lang="ts">
 import { ref, watch, computed, onMounted } from "vue";
 import { mdiTooltipQuestionOutline } from "@mdi/js";
-import { open } from '@tauri-apps/api/shell';
 import { sendTauriNotification } from "@/helpers/tauriNotification";
 import { Configuration } from "@/types/configuration";
 import { invoke } from "@tauri-apps/api/tauri";
+import { WebviewWindow } from "@tauri-apps/api/window";
 
 const emit = defineEmits(["advanced-options"]);
 const defined_props = defineProps<{
@@ -153,6 +153,25 @@ onMounted(async () => {
   }
 });
 
+function openAdvancedOptionsDocPage() {
+  // https://tauri.app/v1/guides/features/multiwindow#create-a-window-in-javascript
+  const webview = new WebviewWindow("advanced-options-doc", {
+    height: 500,
+    width: 760,
+    title: "Advanced Options Documentation",
+    url: "/advanced-options-doc",
+  });
+  // since the webview window is created asynchronously,
+  // Tauri emits the `tauri://created` and `tauri://error` to notify you of the creation response
+  webview.once("tauri://created", function () {
+    // webview window successfully created
+  });
+  webview.once("tauri://error", function (err) {
+    console.error(err);
+    // an error happened creating the webview window
+  });
+}
+
 async function writeConfiguration() {
   try {
     await invoke("write_configuration", { config: configOptions.value });
@@ -170,17 +189,6 @@ function clearAdvancedOptions() {
     ["tile-size"]: "",
     ["load-proc-save"]: "",
   };
-}
-
-async function openGpuDocumentation() {
-  try {
-    await open("https://github.com/xinntao/Real-ESRGAN#usage-of-portable-executable-files");
-  } catch (err) {
-    sendTauriNotification(
-      "Error opening documentation",
-      "Please open the documentation manually at https://github.com/xinntao/Real-ESRGAN#usage-of-portable-executable-files"
-    );
-  }
 }
 
 watch(configOptions, (newVal: Configuration) => {

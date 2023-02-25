@@ -1,7 +1,6 @@
 use crate::{generate_command_parameters, generate_upscale_run_information, utils};
 use serde::{Deserialize, Serialize};
 use std::{
-    collections::HashMap,
     io::{self, Write},
 };
 use tauri::{
@@ -66,20 +65,16 @@ pub async fn upscale_single_image(
     };
 
     let command = tauri::async_runtime::spawn(async move {
-        let advanced_options_map = [
+        let advanced_options_vec = [
             ("-g", advanced_options.gpu_id.as_deref()),
             ("-t", advanced_options.tile_size.as_deref()),
             ("-j", advanced_options.load_proc_save.as_deref()),
         ]
         .into_iter()
-        .filter(|(_, value)| value.is_some() && !value.unwrap().is_empty())
-        .collect::<HashMap<&str, Option<&str>>>();
-
-        let advanced_options_vec = advanced_options_map
-            .iter()
-            .filter_map(|(key, value)| value.map(|value| [*key, value]))
-            .flatten()
-            .collect::<Vec<&str>>();
+        .filter(|(_, value)| value.is_some() && !value.unwrap().trim().is_empty())
+        .map(|(key, value)| [key, value.unwrap()])
+        .flatten()
+        .collect::<Vec<&str>>();
 
         let command_args = advanced_options_vec
             .into_iter()

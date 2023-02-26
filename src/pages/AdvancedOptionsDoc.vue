@@ -1,13 +1,23 @@
 <template>
   <div class="container">
-    <h1>
+    <h2>
       Advanced Options Documentation
-    </h1>
+    </h2>
     <div class="text-start mx-5 mt-8">
-      <h2 class="mb-3">
-        Multi-GPU Options
-      </h2>
       <v-expansion-panels variant="accordion">
+        <v-expansion-panel>
+          <v-expansion-panel-title>
+            <h3 class="expansion-panel-title">
+              TTA
+            </h3>
+          </v-expansion-panel-title>
+          <v-expansion-panel-text>
+            <code>
+              <p>TTA (Test-Time Augmentation) averages the upscaling results of the following 8 augmented inputs.</p>
+              <p>TTA mode able to reduce several type of artifacts but it's 8x slower than non TTA mode.</p>
+            </code>
+          </v-expansion-panel-text>
+        </v-expansion-panel>
         <v-expansion-panel>
           <v-expansion-panel-title>
             <h3 class="expansion-panel-title">

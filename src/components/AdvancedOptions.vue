@@ -5,7 +5,7 @@
       width="650"
     >
       <v-card
-        class="mt-2"
+        class="pa-4"
       >
         <v-card-title>
           <div class="d-flex justify-space-between">
@@ -16,9 +16,18 @@
           </div>
         </v-card-title>
         <v-card-text>
+          <v-slide-y-transition>
+            <v-alert
+              v-model="showSavedAlert"
+              class="save-alert"
+              density="compact"
+              type="success"
+              title="Saved"
+            />
+          </v-slide-y-transition>
           <v-checkbox
             v-model="configOptions['advanced-options'].tta"
-            label="TTA (Test-Time Augmentation) - Averages the upscaling results of the following 8 augmented inputs. It's 8x slower than normal mode."
+            label="TTA (Test-Time Augmentation) - 8x slower processing"
             hide-details
           />
           <v-text-field
@@ -90,7 +99,6 @@
       </template>
     </v-dialog>
     <div v-if="!isAdvancedOptionsEmpty">
-      <p>Active advanced options:</p>
       <p v-if="configOptions['advanced-options']?.tta">
         <strong>TTA: </strong>{{ configOptions['advanced-options']?.tta ? "Active" : "" }}
       </p>
@@ -140,11 +148,12 @@ const rules = {
 }
 
 const dialog = ref(false);
+const showSavedAlert = ref(false);
 const configOptions = ref({} as Configuration);
 
 const isAdvancedOptionsEmpty = computed(() => {
-    return !configOptions.value["advanced-options"]?.['gpu-id'] 
-    && !configOptions.value["advanced-options"]?.["tile-size"] 
+    return !configOptions.value["advanced-options"]?.['gpu-id']
+    && !configOptions.value["advanced-options"]?.["tile-size"]
     && !configOptions.value["advanced-options"]?.["load-proc-save"]
     && !configOptions.value["advanced-options"]?.tta;
 });
@@ -183,6 +192,10 @@ function openAdvancedOptionsDocPage() {
 async function writeConfiguration() {
   try {
     await invoke("write_configuration", { config: configOptions.value });
+    showSavedAlert.value = true;
+    setTimeout(() => {
+      showSavedAlert.value = false;
+    }, 2000);
   } catch (error) {
     sendTauriNotification(
       "Error",
@@ -205,3 +218,11 @@ watch(configOptions, (newVal: Configuration) => {
 }, { deep: true });
 
 </script>
+
+<style scoped lang="scss">
+.save-alert {
+  position: fixed;
+  left: calc(50% - 50px);
+  top: 15px;
+}
+</style>

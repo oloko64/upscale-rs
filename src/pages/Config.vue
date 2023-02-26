@@ -19,7 +19,8 @@
       :items="optionsUpscaleType"
       item-title="text"
       item-value="value"
-      hide-details
+      hint="Takes effect after restart"
+      persistent-hint
       @update:model-value="writeConfiguration()"
     />
     <v-divider class="ml-5 mr-5 mb-5 mt-6" />

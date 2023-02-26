@@ -28,7 +28,7 @@
           </v-expansion-panel-title>
           <v-expansion-panel-text>
             <code>
-              <p>Gpu device to use (default=auto) can be 0,1,2 for multi-gpu.</p>
+              <p>Tile size (>=32/0=auto, default=0) can be 0,0,0 for multi-gpu.</p>
               <p>Use smaller value to reduce GPU memory usage, default selects automatically.</p>
             </code>
           </v-expansion-panel-text>

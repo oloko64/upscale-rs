@@ -9,13 +9,18 @@
       >
         <v-card-title>
           <div class="d-flex justify-space-between">
-            Multi-GPU options
+            Advanced Options
             <v-icon @click="openAdvancedOptionsDocPage">
               {{ mdiTooltipQuestionOutline }}
             </v-icon>
           </div>
         </v-card-title>
         <v-card-text>
+          <v-checkbox
+            v-model="configOptions['advanced-options'].tta"
+            label="TTA (Test-Time Augmentation) - Averages the upscaling results of the following 8 augmented inputs. It's 8x slower than normal mode."
+            hide-details
+          />
           <v-text-field
             v-model.trim="configOptions['advanced-options']['gpu-id']"
             :rules="[rules.gpuId]"
@@ -86,6 +91,9 @@
     </v-dialog>
     <div v-if="!isAdvancedOptionsEmpty">
       <p>Active advanced options:</p>
+      <p v-if="configOptions['advanced-options']?.tta">
+        <strong>TTA: </strong>{{ configOptions['advanced-options']?.tta ? "Active" : "" }}
+      </p>
       <p v-if="configOptions['advanced-options']?.['gpu-id']">
         <strong>gpu-id: </strong>{{ configOptions['advanced-options']?.['gpu-id'] }}
       </p>
@@ -137,7 +145,8 @@ const configOptions = ref({} as Configuration);
 const isAdvancedOptionsEmpty = computed(() => {
     return !configOptions.value["advanced-options"]?.['gpu-id'] 
     && !configOptions.value["advanced-options"]?.["tile-size"] 
-    && !configOptions.value["advanced-options"]?.["load-proc-save"];
+    && !configOptions.value["advanced-options"]?.["load-proc-save"]
+    && !configOptions.value["advanced-options"]?.tta;
 });
 
 onMounted(async () => {
@@ -187,6 +196,7 @@ function clearAdvancedOptions() {
     ["gpu-id"]: "",
     ["tile-size"]: "",
     ["load-proc-save"]: "",
+    tta: false,
   };
 }
 

@@ -9,13 +9,16 @@ use tauri::{
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct AdvancedOptions {
     #[serde(rename = "gpu-id")]
-    pub gpu_id: Option<String>,
+    pub gpu_id: String,
 
     #[serde(rename = "tile-size")]
-    pub tile_size: Option<String>,
+    pub tile_size: String,
 
     #[serde(rename = "load-proc-save")]
-    pub load_proc_save: Option<String>,
+    pub load_proc_save: String,
+
+    #[serde(rename = "tta")]
+    pub tta: bool,
 }
 
 enum UpscaleTypes {
@@ -63,16 +66,20 @@ pub async fn upscale_single_image(
     };
 
     let command = tauri::async_runtime::spawn(async move {
-        let advanced_options_vec = [
-            ("-g", advanced_options.gpu_id.as_deref()),
-            ("-t", advanced_options.tile_size.as_deref()),
-            ("-j", advanced_options.load_proc_save.as_deref()),
+        let mut advanced_options_vec = [
+            ("-g", &advanced_options.gpu_id),
+            ("-t", &advanced_options.tile_size),
+            ("-j", &advanced_options.load_proc_save),
         ]
         .into_iter()
-        .filter(|(_, value)| value.is_some() && !value.unwrap_or_default().trim().is_empty())
-        .map(|(key, value)| [key, value.unwrap()])
+        .filter(|(_, value)| !value.trim().is_empty())
+        .map(|(key, value)| [key, value])
         .flatten()
         .collect::<Vec<&str>>();
+
+        if advanced_options.tta {
+            advanced_options_vec.push("-x")
+        }
 
         let command_args = advanced_options_vec
             .into_iter()

@@ -73,12 +73,11 @@ pub async fn upscale_single_image(
         ]
         .into_iter()
         .filter(|(_, value)| !value.trim().is_empty())
-        .map(|(key, value)| [key, value])
-        .flatten()
+        .flat_map(|(key, value)| [key, value])
         .collect::<Vec<&str>>();
 
         if advanced_options.tta {
-            advanced_options_vec.push("-x")
+            advanced_options_vec.push("-x");
         }
 
         let command_args = advanced_options_vec

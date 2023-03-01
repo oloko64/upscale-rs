@@ -51,7 +51,7 @@
           </v-expansion-panel-title>
           <v-expansion-panel-text>
             <code>
-              <p>Thread count for load/proc/save (default=1:2:2)</p>
+              <p>Thread count for load/proc/save (default=1:2:2).</p>
               <p>Thread count for the three stages (image decoding + model upscaling + image encoding), using larger values may increase GPU usage and consume more GPU memory.
               </p>
               <p>You can tune this configuration with "4:4:4" for many small-size images, and "2:2:2" for large-size images. The default setting usually works fine for most situations. If you find that your GPU is hungry, try increasing thread count to achieve faster processing.</p>

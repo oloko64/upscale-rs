@@ -21,7 +21,7 @@ Using the [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) model under the 
 
 # Interface
 
-![image](https://user-images.githubusercontent.com/49915167/210158032-295562a4-aa23-43f3-b396-db157f748c40.png)
+![image](https://user-images.githubusercontent.com/49915167/222283230-22257c4f-eae6-40b8-90c1-246a89124414.png)
 
 # Upscaling Sample
 

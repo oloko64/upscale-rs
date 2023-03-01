@@ -2,7 +2,7 @@
   <div>
     <v-dialog
       v-model="dialog"
-      width="650"
+      width="550"
     >
       <v-card
         class="pa-4"

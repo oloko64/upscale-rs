@@ -36,7 +36,7 @@
             maxlength="20"
             class="mt-2"
             label="gpu-id"
-            placeholder="gpu device to use (default=auto) can be 0,1,2 for multi-gpu"
+            placeholder="gpu device to use (default=auto)"
             density="compact"
             variant="outlined"
           />
@@ -44,7 +44,7 @@
             v-model.trim="configOptions['advanced-options']['tile-size']"
             maxlength="20"
             label="tile-size"
-            placeholder="tile size (>=32/0=auto, default=0) can be 0,0,0 for multi-gpu"
+            placeholder="tile size (>=32/0=auto, default=0)"
             density="compact"
             variant="outlined"
           />
@@ -52,7 +52,7 @@
             v-model.trim="configOptions['advanced-options']['load-proc-save']"
             maxlength="20"
             label="load:proc:save" 
-            placeholder="thread count for load/proc/save (default=1:2:2) can be 1:2,2,2:2 for multi-gpu"
+            placeholder="thread count for load/proc/save (default=1:2:2)"
             density="compact"
             variant="outlined"
           />

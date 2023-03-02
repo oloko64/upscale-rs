@@ -45,7 +45,8 @@ impl Logger {
             .expect("Failed to open log file");
         file.write_all(
             format!(
-                "{message}\n###################################################################\n")
+                "{message}\n###################################################################\n"
+            )
             .as_bytes(),
         )
         .expect("Failed to write to log file");
@@ -69,7 +70,8 @@ pub fn read_image_base64(path: &str, max_mb_size: Option<u8>) -> Result<String, 
                 // 1 MB = 1048576 bytes
                 if buffer.len() > ((max_mb_size as usize) * 1_048_576) {
                     return Err(format!(
-                        "File is too large. Maximum size is set at {max_mb_size} MB."));
+                        "File is too large. Maximum size is set at {max_mb_size} MB."
+                    ));
                 }
             }
         }
@@ -98,6 +100,8 @@ pub fn replace_file_suffix(path: &str) -> String {
         jpg.to_owned() + "_upscaled-4x.jpg"
     } else if let Some(jpeg) = path.strip_suffix(".jpeg") {
         jpeg.to_owned() + "_upscaled-4x.jpeg"
+    } else if let Some(webp) = path.strip_suffix(".webp") {
+        webp.to_owned() + "_upscaled-4x.webp"
     } else {
         path.to_owned() + "_upscaled-4x.png"
     }
@@ -152,6 +156,10 @@ mod tests {
             replace_file_suffix("/home/user/image.jpeg"),
             "/home/user/image_upscaled-4x.jpeg"
         );
+        assert_eq!(
+            replace_file_suffix("/home/user/image.webp"),
+            "/home/user/image_upscaled-4x.webp"
+        );
     }
 
     #[test]
@@ -167,6 +175,10 @@ mod tests {
         assert_eq!(
             replace_file_suffix(r#"C:\Users\user\image.jpeg"#),
             r#"C:\Users\user\image_upscaled-4x.jpeg"#
+        );
+        assert_eq!(
+            replace_file_suffix(r#"C:\Users\user\image.webp"#),
+            r#"C:\Users\user\image_upscaled-4x.webp"#
         );
     }
 
@@ -192,5 +204,20 @@ mod tests {
             replace_file_suffix("/home/user two/image with spaces.png"),
             "/home/user two/image with spaces_upscaled-4x.png"
         );
+    }
+
+    #[test]
+    fn test_filter_percentage_output() {
+        assert_eq!(filter_percentage_output("100%"), Some("100%".to_owned()));
+        assert_eq!(filter_percentage_output(" 100%"), Some("100%".to_owned()));
+        assert_eq!(filter_percentage_output("100% "), Some("100%".to_owned()));
+        assert_eq!(filter_percentage_output(" 100% "), Some("100%".to_owned()));
+        assert_eq!(filter_percentage_output("100 %"), Some("100 %".to_owned()));
+        assert_eq!(filter_percentage_output("100% "), Some("100%".to_owned()));
+        assert_eq!(filter_percentage_output("100 %"), Some("100 %".to_owned()));
+        assert_eq!(filter_percentage_output(" 100% "), Some("100%".to_owned()));
+        assert_eq!(filter_percentage_output("10%0"), None);
+        assert_eq!(filter_percentage_output("%100"), None);
+        assert_eq!(filter_percentage_output("100"), None);
     }
 }

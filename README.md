@@ -13,15 +13,18 @@ Using the [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) model under the 
 - 4x upscale of images with 2 configurations general photo and anime.
 - Single and multiple images upscale.
 - Real time percentage progress.
+- Support for `png`, `jpg` and `webp` images.
+- Option to use TTA (Test Time Augmentation) for reduced artifacts.
+- Ability to select which GPU to use as well as `tile-size` and `load:proc:save` so you can fine tune the performance.
 - Inside app image previewer.
 - Drag and drop of images for easy of use.
 - No internet needed, can be used offline.
 - Build in logging for better debugging (optional and off by default).
-- Light and Dark modes, based on your app configurtation (Windows only feature, Linux uses Dark mode).
+- Light and Dark modes, based on your app configuration (Windows only feature, Linux uses Dark mode).
 
 # Interface
 
-![image](https://user-images.githubusercontent.com/49915167/210158032-295562a4-aa23-43f3-b396-db157f748c40.png)
+![image](https://user-images.githubusercontent.com/49915167/222283230-22257c4f-eae6-40b8-90c1-246a89124414.png)
 
 # Upscaling Sample
 

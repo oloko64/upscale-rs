@@ -20,10 +20,15 @@
       </v-btn>
       <UpscaleTypeOption
         :disabled="isProcessing"
-        class="mt-2 mb-5"
+        class="mt-2 mb-2"
         @upscale-type-changed="setUpscaleType"
       />
-      <v-divider class="mb-10 mt-5" />
+      <AdvancedOptions
+        :disabled="isProcessing"
+        class="mt-3"
+        @advanced-options="updateAdvancedOptions"
+      />
+      <v-divider class="mb-6 mt-3" />
       <!-- Scale factor seems not to be working -->
       <!-- <UpscaleFactorOptions @upscale-factor-changed="updateUpscaleFactor" /> -->
       <v-btn
@@ -51,8 +56,9 @@
       <div class="d-flex">
         <v-btn
           elevation="0"
-          class="config-button"
+          class="config-options-button"
           size="32"
+          :disabled="isProcessing"
           :icon="mdiMenu"
           @click="openConfig"
         />
@@ -69,30 +75,30 @@
         {{ imagePath }}
       </h5>
       <h5
-        v-for="imagePath in imagePaths"
-        :key="imagePath.path"
+        v-for="imgPath in imagePaths"
+        :key="imgPath.path"
         class="mb-2 path-text"
       >
         <v-progress-circular
-          v-if="!imagePath.isReady"
+          v-if="!imgPath.isReady"
           v-show="showMultipleFilesProcessingIcon"
           indeterminate
           color="#ff7a00"
           size="16"
         />
         <span
-          v-if="!imagePath.isReady"
+          v-if="!imgPath.isReady"
           v-show="showMultipleFilesProcessingIcon"
         > - {{
-          imagePath.progressPercentageMulti
+          imgPath.progressPercentageMulti
         }} |</span>
         <v-icon
-          v-if="imagePath.isReady"
+          v-if="imgPath.isReady"
           v-show="showMultipleFilesProcessingIcon"
           size="16"
           :icon="mdiImageCheck"
         />
-        <span class="ml-2">{{ imagePath.path }}</span>
+        <span class="ml-2">{{ imgPath.path }}</span>
         <v-divider />
       </h5>
       <div v-if="isProcessing && !isMultipleFiles">
@@ -126,6 +132,8 @@ import { ref, Ref, computed } from "vue";
 import HorizontalLogo from "@/assets/upscale-rs-horizontal.png";
 import UpscaleTypeOption from "@/components/UpscaleTypeOption.vue";
 import ImagePreviewer from "@/components/ImagePreviewer.vue";
+import { AdvancedOptionsType } from "@/types/advancedOptions";
+import AdvancedOptions from "@/components/AdvancedOptions.vue";
 import { mdiFileImage, mdiImageCheck, mdiMenu } from "@mdi/js";
 import { invoke } from "@tauri-apps/api/tauri";
 import { loadImage } from "@/helpers/loadImageBase64";
@@ -152,6 +160,12 @@ const isMultipleFiles = ref(false);
 const showMultipleFilesProcessingIcon = ref(false);
 const progressPercentage = ref(DEFAULT_PERCENTAGE);
 
+const advancedOptions = ref({
+    ["gpu-id"]: "",
+    ["tile-size"]: "",
+    ["load-proc-save"]: "",
+} as AdvancedOptionsType);
+
 
 // Computes if the user is ready to upscale the image. Used the simplify the DOM code.
 const isReadyToUpscale = computed(() => {
@@ -174,6 +188,7 @@ appWindow.listen("tauri://file-drop", async ({ event, payload }: { event: any, p
     return;
   }
   clearSelectedImage();
+  const validExtensions = (path: string) => path.endsWith(".png") || path.endsWith(".jpg") || path.endsWith(".jpeg") || path.endsWith(".webp");
   if (files.length > 1) {
     showMultipleFilesProcessingIcon.value = false;
     isMultipleFiles.value = true;
@@ -185,23 +200,11 @@ appWindow.listen("tauri://file-drop", async ({ event, payload }: { event: any, p
           progressPercentageMulti: ref(DEFAULT_PERCENTAGE),
         };
       })
-      .filter((file) => {
-        return (
-          file.path.endsWith(".png") ||
-          file.path.endsWith(".jpg") ||
-          file.path.endsWith(".jpeg")
-        );
-      });
+      .filter((file) => validExtensions(file.path));
   } else {
     const image = files[0];
     isMultipleFiles.value = false;
-    if (
-      !(
-        image.endsWith(".png") ||
-        image.endsWith(".jpg") ||
-        image.endsWith(".jpeg")
-      )
-    ) {
+    if (!validExtensions(image)) {
       alert("Please select a valid image file.");
       return;
     }
@@ -215,6 +218,10 @@ appWindow.listen("tauri://file-drop", async ({ event, payload }: { event: any, p
     }
   }
 });
+
+function updateAdvancedOptions(options: AdvancedOptionsType) {
+  advancedOptions.value = options;
+}
 
 function openAboutPage() {
   // https://tauri.app/v1/guides/features/multiwindow#create-a-window-in-javascript
@@ -369,6 +376,7 @@ async function upscaleMultipleImages() {
         savePath: outputFile,
         upscaleFactor: upscaleFactor.value,
         upscaleType: upscaleType.value,
+        advancedOptions: advancedOptions.value,
       });
       imagePaths.value[i].isReady = true;
       progressPercentage.value = DEFAULT_PERCENTAGE;
@@ -412,6 +420,7 @@ async function upscaleSingleImage() {
       savePath: imageSavePath,
       upscaleFactor: upscaleFactor.value,
       upscaleType: upscaleType.value,
+      advancedOptions: advancedOptions.value,
     });
     sendTauriNotification("Upscale-rs", "The image was successfully upscaled!");
 
@@ -466,6 +475,12 @@ async function upscaleSingleImage() {
   white-space: nowrap;
 }
 
+.config-options-button {
+  position: fixed;
+  top: 525px;
+  left: 15px;
+}
+
 .file-drop-area {
   min-width: 500px;
   min-height: 500px;
@@ -491,10 +506,6 @@ async function upscaleSingleImage() {
   margin-bottom: 0px !important;
   height: 30px;
   cursor: pointer;
-}
-
-.config-button {
-  margin-top: 160px;
 }
 
 .options-column {

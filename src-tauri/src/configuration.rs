@@ -2,6 +2,8 @@ use std::{error::Error, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
+use crate::commands::AdvancedOptions;
+
 pub const CONFIG_FOLDER: &str = "upscale-rs";
 pub const LOG_FILE: &str = "upscale-rs.log";
 const CONFIG_FILE: &str = "upscale-rs-config.json";
@@ -16,6 +18,9 @@ pub struct ConfigData {
 
     #[serde(rename = "max-preview-upscale-size")]
     max_preview_upscale_size: u8,
+
+    #[serde(rename = "advanced-options")]
+    advanced_options: AdvancedOptions,
 }
 
 impl Default for ConfigData {
@@ -24,6 +29,7 @@ impl Default for ConfigData {
             application_logs: false,
             default_upscale_type: String::from("general"),
             max_preview_upscale_size: 15,
+            advanced_options: AdvancedOptions::default(),
         }
     }
 }

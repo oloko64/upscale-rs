@@ -7,7 +7,7 @@
       inset
       class="ml-5"
       label="Save application logs"
-      @update:modelValue="write_configuration()"
+      @update:model-value="writeConfiguration()"
     />
     <v-divider class="ml-5 mr-5 mb-5 mt-2" />
     <v-select
@@ -19,8 +19,9 @@
       :items="optionsUpscaleType"
       item-title="text"
       item-value="value"
-      hide-details
-      @update:modelValue="write_configuration()"
+      hint="Takes effect after restart"
+      persistent-hint
+      @update:model-value="writeConfiguration()"
     />
     <v-divider class="ml-5 mr-5 mb-5 mt-6" />
     <div class="max-size-option">
@@ -36,7 +37,7 @@
         density="comfortable"
         :items="optionsPreviewMaxSize"
         hide-details
-        @update:modelValue="write_configuration()"
+        @update:model-value="writeConfiguration()"
       />
     </div>
   </div>
@@ -45,6 +46,7 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { ref, onMounted } from "vue";
 import { Configuration } from "@/types/configuration";
+import { sendTauriNotification } from "@/helpers/tauriNotification";
 
 const optionsPreviewMaxSize = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
 
@@ -66,12 +68,22 @@ onMounted(async () => {
     const config = await invoke<Configuration>("load_configuration");
     options.value = config;
   } catch (error) {
-    alert(error);
+    sendTauriNotification(
+      "Error",
+      "Error loading configuration file",
+    );
   }
 });
 
-function write_configuration() {
-  invoke("write_configuration", { config: options.value });
+async function writeConfiguration() {
+  try {
+    await invoke("write_configuration", { config: options.value });
+  } catch (error) {
+    sendTauriNotification(
+      "Error",
+      "Error writing configuration file",
+    );
+  }
 }
 </script>
 

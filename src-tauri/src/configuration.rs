@@ -1,6 +1,5 @@
-use std::{error::Error, path::PathBuf};
-
 use serde::{Deserialize, Serialize};
+use std::{error::Error, path::PathBuf};
 
 use crate::commands::AdvancedOptions;
 

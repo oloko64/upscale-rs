@@ -1,3 +1,4 @@
+use base64::{engine::general_purpose, Engine as _};
 use std::{
     fs::{File, OpenOptions},
     io::{Read, Write},
@@ -5,7 +6,6 @@ use std::{
 };
 
 use crate::configuration::{self, ConfigData, CONFIG_FOLDER, LOG_FILE};
-use base64::{engine::general_purpose, Engine as _};
 
 pub struct Logger {
     path: PathBuf,
@@ -95,15 +95,15 @@ pub fn filter_percentage_output(output_str: &str) -> Option<String> {
 #[tauri::command]
 pub fn replace_file_suffix(path: &str) -> String {
     if let Some(png) = path.strip_suffix(".png") {
-        png.to_owned() + "_upscaled-4x.png"
+        format!("{png}_upscaled-4x.png")
     } else if let Some(jpg) = path.strip_suffix(".jpg") {
-        jpg.to_owned() + "_upscaled-4x.jpg"
+        format!("{jpg}_upscaled-4x.jpg")
     } else if let Some(jpeg) = path.strip_suffix(".jpeg") {
-        jpeg.to_owned() + "_upscaled-4x.jpeg"
+        format!("{jpeg}_upscaled-4x.jpeg")
     } else if let Some(webp) = path.strip_suffix(".webp") {
-        webp.to_owned() + "_upscaled-4x.webp"
+        format!("{webp}_upscaled-4x.webp")
     } else {
-        path.to_owned() + "_upscaled-4x.png"
+        format!("{path}_upscaled-4x.png")
     }
 }
 

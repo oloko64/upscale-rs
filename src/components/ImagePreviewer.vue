@@ -1,56 +1,46 @@
 <template>
-  <div>
     <viewer :images="images" />
-    <div
-      :class="{ 'preview-area': !isProcessing }"
-      @click="showImagePreviewer"
-    >
-      <v-img
-        :class="{ 'image-src-on-hover': !isProcessing }"
-        class="image-src"
-        :src="imageSrc"
-        width="500"
-        height="500"
-        aspect-ratio="1"
-        cover
-      >
-        <div
-          v-if="!isProcessing"
-          class="preview-text-back px-3 py-2"
+    <div :class="{ 'preview-area': !isProcessing }" @click="showImagePreviewer">
+        <v-img
+            :class="{ 'image-src-on-hover': !isProcessing }"
+            class="image-src"
+            :src="imageSrc"
+            width="500"
+            height="500"
+            aspect-ratio="1"
+            cover
         >
-          <p class="ma-0">
-            Click to preview
-          </p>
-        </div>
-      </v-img>
+            <div v-if="!isProcessing" class="preview-text-back px-3 py-2">
+                <p class="ma-0">Click to preview</p>
+            </div>
+        </v-img>
     </div>
-  </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from "vue";
 export default defineComponent({
     props: {
         // This array needs to have the first element as the upscaled version of the image, and the second element as the original version
         // This is because the order will matter when the image is previewed in the viewer
         images: {
             type: Array,
-            default: () => []
+            default: () => [],
         },
         isProcessing: {
             type: Boolean,
-            default: false
-        }
+            default: false,
+        },
     },
     computed: {
         imageSrc() {
-            if (this.images[0]) return this.images[0] as string
-            return this.images[1] as string
-        }
+            if (this.images[0]) return this.images[0] as string;
+            return this.images[1] as string;
+        },
     },
     methods: {
         showImagePreviewer() {
             if (this.isProcessing) {
-                return
+                return;
             }
             this.$viewerApi({
                 images: this.images as string[],
@@ -63,10 +53,10 @@ export default defineComponent({
                     scalable: false,
                     fullscreen: false,
                 },
-            })
+            });
         },
     },
-})
+});
 </script>
 <style scoped lang="scss">
 .show-image-preview {

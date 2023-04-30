@@ -58,7 +58,6 @@
             <v-card-actions>
                 <v-spacer />
                 <v-btn
-                    text
                     variant="outlined"
                     height="30"
                     @click="writeConfiguration()"
@@ -72,12 +71,7 @@
                 >
                     Clear
                 </v-btn>
-                <v-btn
-                    text
-                    variant="outlined"
-                    height="30"
-                    @click="dialog = false"
-                >
+                <v-btn variant="outlined" height="30" @click="dialog = false">
                     Close
                 </v-btn>
             </v-card-actions>
@@ -119,7 +113,6 @@
                 variant="outlined"
                 height="30"
                 :disabled="defined_props.disabled"
-                text
                 @click="clearAdvancedOptions()"
             >
                 Clear

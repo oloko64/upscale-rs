@@ -1,5 +1,5 @@
 <template>
-  <router-view />
+    <router-view />
 </template>
 
 <script setup lang="ts">
@@ -12,11 +12,11 @@ import { appWindow } from "@tauri-apps/api/window";
 const theme = useTheme();
 
 onMounted(async () => {
-  const appTheme = await appWindow.theme();
-  const platformName = await platform();
+    const appTheme = await appWindow.theme();
+    const platformName = await platform();
 
-  if (appTheme && platformName === 'win32') {
-    theme.global.name.value = appTheme;
-  }
+    if (appTheme && platformName === "win32") {
+        theme.global.name.value = appTheme;
+    }
 });
 </script>

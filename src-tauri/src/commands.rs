@@ -1,10 +1,11 @@
-use crate::{generate_command_parameters, generate_upscale_run_information, utils};
 use serde::{Deserialize, Serialize};
 use std::io::{self, Write};
 use tauri::{
     api::process::{Command, CommandEvent},
     Window,
 };
+
+use crate::{generate_command_parameters, generate_upscale_run_information, utils};
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct AdvancedOptions {
